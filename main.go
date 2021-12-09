@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"thaBeat/ride/farecalculation"
 	"thaBeat/ride/parser"
 	"thaBeat/utils"
 )
@@ -26,6 +27,13 @@ func Estimator(inpath string, outPath string) error {
 	if err != nil {
 		return fmt.Errorf("failed to parse the data  : %v", err)
 	}
-	fmt.Println(parsedData)
+	var theArray [][]string
+	for row := range parsedData {
+		estimation := farecalculation.CalculateFare(parsedData[row])
+		mySlice := []string{estimation.IDRide, fmt.Sprintf("%.2f", estimation.Total)}
+		theArray = append(theArray, mySlice)
+	}
+	utils.WriteToFile(outPath, theArray)
+
 	return nil
 }

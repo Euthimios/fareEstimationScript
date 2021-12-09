@@ -13,6 +13,7 @@ func ParseData(input [][]string) ([]model.Ride, error) {
 	var id string
 
 	for row := range input {
+
 		// parse every row in order to get the id and the locations
 		currentID, currentLocation, err := parseRow(input[row])
 
@@ -21,13 +22,13 @@ func ParseData(input [][]string) ([]model.Ride, error) {
 			return nil, fmt.Errorf("wrong data sended to parser; error: %v", err)
 		}
 
-		//in case the file contains data for different id_rides
+		// in case the file contains data for different id_rides
 		if len(locations) != 0 && id != currentID {
 			rides := model.Ride{
 				ID:              id,
 				LocationSignals: locations,
 			}
-			//append the data at ride
+			// append the data at ride
 			ride = append(ride, rides)
 			// empty the locations in order to add the
 			// new data from the new id_ride
@@ -56,7 +57,7 @@ func parseRow(row []string) (string, *model.Signal, error) {
 	timestamp, errTime := strconv.ParseInt(row[3], 10, 32)
 
 	if errLat != nil || errLon != nil || errTime != nil {
-		return "", nil, fmt.Errorf("Failed to parse row")
+		return "", nil, fmt.Errorf("failed to parse row")
 	}
 
 	return id, &model.Signal{

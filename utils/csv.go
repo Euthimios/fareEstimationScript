@@ -28,3 +28,35 @@ func ReadFromFile(path string) ([][]string, error) {
 	}
 	return data, nil
 }
+
+// WriteToFile gets a file name  and writes them in a file
+func WriteToFile(path string, input [][]string) error {
+	fullpath, err := filepath.Abs(path)
+	if err != nil {
+		return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
+	}
+
+	dirpath := filepath.Dir(fullpath)
+	err = os.MkdirAll(dirpath, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
+	}
+
+	file, err := os.Create(fullpath)
+	if err != nil {
+		return fmt.Errorf("cannot create file; err: %v", err)
+	}
+
+	writer := csv.NewWriter(file)
+
+	for row := range input {
+		err := writer.Write(input[row])
+		if err != nil {
+			return fmt.Errorf("cannot write row in file; err: %v", err)
+		}
+	}
+
+	writer.Flush()
+	file.Close()
+	return nil
+}
