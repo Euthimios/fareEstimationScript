@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"thaBeat/ride/parser"
 	"thaBeat/utils"
 )
 
@@ -21,6 +22,10 @@ func Estimator(inpath string, outPath string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
-	fmt.Println(read)
+	parsedData, err := parser.ParseData(read)
+	if err != nil {
+		return fmt.Errorf("failed to parse the data  : %v", err)
+	}
+	fmt.Println(parsedData)
 	return nil
 }
