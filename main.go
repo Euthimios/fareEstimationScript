@@ -17,10 +17,10 @@ func main() {
 }
 
 func Estimator(inpath string, outPath string) error {
-	readChannel, err := utils.ReadFromFileChannel(inpath)
+	read, err := utils.ReadFromFile(inpath)
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
-	fmt.Println(readChannel)
+	fmt.Println(read)
 	return nil
 }

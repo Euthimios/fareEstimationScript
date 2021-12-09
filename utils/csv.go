@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 )
 
-// ReadFromFileChannel gets a file path as parameter, opens a csv file, reads it
-func ReadFromFileChannel(path string) ([][]string, error) {
+// ReadFromFile gets a file path as parameter, opens a csv file, reads it
+func ReadFromFile(path string) ([][]string, error) {
 	fullpath, err := filepath.Abs(path)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
