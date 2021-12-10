@@ -1,4 +1,4 @@
-package farecalculation
+package fareCalculation
 
 import (
 	"math"
@@ -20,7 +20,7 @@ const (
 func CalculateFare(ride model.Ride) *FareRide {
 
 	total := flagRate
-	for i := 0; i < len(ride.LocationSignals); i++ {
+	for i := 0; i < len(ride.LocationSignals)-1; i++ {
 		for j := i + 1; j < len(ride.LocationSignals); j++ {
 
 			startSignal := ride.LocationSignals[i]
