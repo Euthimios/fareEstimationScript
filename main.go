@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"thaBeat/ride/fareCalculation"
 	"thaBeat/ride/parser"
@@ -8,24 +9,26 @@ import (
 )
 
 func main() {
-	input := "files/input.csv"
-	output := "files/output.csv"
-	/*	if len(os.Args) < 3 {
-			fmt.Println("A filepath argument is required")
-			os.Exit(1)
-		}
-		input := os.Args[1]
-		output := os.Args[2]*/
 
-	err := estimator(input, output)
+	flag.Usage = func() {
+		fmt.Printf(" Fare Ride Calculation Script\n")
+		fmt.Printf(" Please read bellow how to use the script , and how to use the arguments\n\n")
+		flag.PrintDefaults()
+	}
+
+	inPath := flag.String("inPath", "files/input.csv", "pleas enter the path for the file that has the Ride data")
+	outPath := flag.String("outPath", "files/output.csv", "please enter the path for the file that will have the calculated data for each Ride")
+	flag.Parse()
+
+	err := estimator(*inPath, *outPath)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("complete")
 }
 
-func estimator(inpath string, outPath string) error {
-	read, err := utils.ReadFromFile(inpath)
+func estimator(inPath string, outPath string) error {
+	read, err := utils.ReadFromFile(inPath)
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
