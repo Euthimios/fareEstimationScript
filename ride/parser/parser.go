@@ -25,7 +25,7 @@ func ParseData(input [][]string) (<-chan model.Ride, <-chan error) {
 			}
 			// in case the file contains data for different id_rides
 			if len(locations) != 0 && id != currentID {
-				rides := model.Ride{
+				rides = model.Ride{
 					ID:              id,
 					LocationSignals: locations,
 				}
@@ -44,6 +44,7 @@ func ParseData(input [][]string) (<-chan model.Ride, <-chan error) {
 			LocationSignals: locations,
 		}
 		ridePositions <- rides
+		close(ridePositions)
 	}()
 
 	return ridePositions, channelError

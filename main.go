@@ -29,21 +29,23 @@ func estimator(inpath string, outPath string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
+
 	parsedData, parsedDataError := parser.ParseData(read)
-
 	fareByRide := fareCalculation.CalculateFare(parsedData)
-
-	fmt.Println(parsedDataError)
-	fmt.Println(parsedData)
-	fmt.Println(fareByRide)
-
-	/*	var fareEstimation [][]string
-		for row := range parsedData {
-			estimation := fareCalculation.CalculateFare(parsedData[row])
-			mySlice := []string{estimation.IDRide, fmt.Sprintf("%.2f", estimation.Total)}
-			fareEstimation = append(fareEstimation, mySlice)
+	done, writeToFileError, err := utils.WriteToFile(outPath, fareByRide)
+	if err != nil {
+		return fmt.Errorf("error during file write , err: %v", err)
+	}
+	select {
+	case err := <-parsedDataError:
+		if err != nil {
+			return fmt.Errorf("error : %v", err)
 		}
-		utils.WriteToFile(outPath, fareEstimation)*/
-
+	case err := <-writeToFileError:
+		if err != nil {
+			return fmt.Errorf("error : %v", err)
+		}
+	case <-done:
+	}
 	return nil
 }

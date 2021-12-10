@@ -64,12 +64,8 @@ func CalculateFare(inputCh <-chan model.Ride) <-chan []string {
 			// select  the greatest
 			total = math.Max(total, minTotal)
 			data <- []string{ride.ID, fmt.Sprintf("%.2f", total)}
-			/*
-				return &FareRide{
-					IDRide: ride.ID,
-					Total:  total,
-				}*/
 		}
+		close(data)
 	}()
 	return data
 }
