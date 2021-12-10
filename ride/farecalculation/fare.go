@@ -1,4 +1,4 @@
-package farecalculation
+package fareCalculation
 
 // FareRide represents a ride with id and calculated total fee
 type FareRide struct {

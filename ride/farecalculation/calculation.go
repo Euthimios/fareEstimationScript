@@ -1,6 +1,7 @@
-package farecalculation
+package fareCalculation
 
 import (
+	"fmt"
 	"math"
 	"thaBeat/ride/model"
 	"time"
@@ -17,57 +18,64 @@ const (
 	minTotal             = float64(3.47)    // minimum ride fare
 )
 
-func CalculateFare(ride model.Ride) *FareRide {
+func CalculateFare(inputCh <-chan model.Ride) <-chan []string {
 
-	total := flagRate
-	for i := 0; i < len(ride.LocationSignals); i++ {
-		for j := i + 1; j < len(ride.LocationSignals); j++ {
+	data := make(chan []string)
 
-			startSignal := ride.LocationSignals[i]
-			endSignal := ride.LocationSignals[j]
+	go func() {
+		for ride := range inputCh {
+			total := flagRate
+			length := len(ride.LocationSignals)
+			for i := 0; i < length-1; i++ {
+				for j := i + 1; j < length; j++ {
 
-			//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
-			deltaTimeSeconds := float64(endSignal.Timestamp - startSignal.Timestamp)
+					startSignal := ride.LocationSignals[i]
+					endSignal := ride.LocationSignals[j]
 
-			//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
-			deltaDistanceKm := calculateHaversine(startSignal.Longitude, startSignal.Latitude, endSignal.Longitude, endSignal.Latitude)
+					//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
+					deltaTimeSeconds := float64(endSignal.Timestamp - startSignal.Timestamp)
+					//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
+					deltaDistanceKm := calculateHaversine(startSignal.Longitude, startSignal.Latitude, endSignal.Longitude, endSignal.Latitude)
+					// calculate the segment’s speed in khm
+					speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
 
-			// calculate the segment’s speed in khm
-			speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
+					//if speed is > 100km/h remove the second element from the set
+					if speed > maxSpeed {
+						i++
+						// skip the corrupted point
+						continue
+					}
 
-			//if speed is > 100km/h remove the second element from the set
-			if speed > maxSpeed {
-				i++
-				// skip the corrupted point
-				continue
+					// calculate idle rate
+					if speed <= minSpeed {
+						total += (deltaTimeSeconds / 3600) * idleHourRate
+						break
+					}
+
+					// calculate distance rate by hour
+					if isDayRide(startSignal.Timestamp) {
+						total += deltaDistanceKm * movingRateDayShift
+					} else {
+						total += deltaDistanceKm * movingRateNightShift
+					}
+					break
+				}
 			}
-
-			// calculate idle rate
-			if speed <= minSpeed {
-				total += (deltaTimeSeconds / 3600) * idleHourRate
-				break
-			}
-
-			// calculate distance rate by hour
-			if isDayRide(startSignal.Timestamp) {
-				total += deltaDistanceKm * movingRateDayShift
-			} else {
-				total += deltaDistanceKm * movingRateNightShift
-			}
-			break
+			// select  the greatest
+			total = math.Max(total, minTotal)
+			data <- []string{ride.ID, fmt.Sprintf("%.2f", total)}
+			/*
+				return &FareRide{
+					IDRide: ride.ID,
+					Total:  total,
+				}*/
 		}
-	}
-	// select  the greatest
-	total = math.Max(total, minTotal)
-	return &FareRide{
-		IDRide: ride.ID,
-		Total:  total,
-	}
+	}()
+	return data
 }
 
-//calculate if the given timestamp
-//is at day/night sift
-// TODO make it more accurate on minutes
+//calculate if the given timestamp is at day/night sift
+// TODO improve accuracy on minutes in order to catch a scenario where the ride starts few minutes befare shift changes
 func isDayRide(timestamp int32) bool {
 	t := time.Unix(int64(timestamp), 0).UTC()
 	hour := t.Hour()
