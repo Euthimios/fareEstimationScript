@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"thaBeat/ride/farecalculation"
+	"thaBeat/ride/fareCalculation"
 	"thaBeat/ride/parser"
 	"thaBeat/utils"
 )
@@ -35,7 +35,7 @@ func Estimator(inpath string, outPath string) error {
 	}
 	var fareEstimation [][]string
 	for row := range parsedData {
-		estimation := farecalculation.CalculateFare(parsedData[row])
+		estimation := fareCalculation.CalculateFare(parsedData[row])
 		mySlice := []string{estimation.IDRide, fmt.Sprintf("%.2f", estimation.Total)}
 		fareEstimation = append(fareEstimation, mySlice)
 	}
