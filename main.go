@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"thaBeat/ride/farecalculation"
 	"thaBeat/ride/parser"
 	"thaBeat/utils"
 )
@@ -17,29 +16,30 @@ func main() {
 		input := os.Args[1]
 		output := os.Args[2]*/
 
-	err := Estimator(input, output)
+	err := estimator(input, output)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("complete")
 }
 
-func Estimator(inpath string, outPath string) error {
+func estimator(inpath string, outPath string) error {
 	read, err := utils.ReadFromFile(inpath)
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
-	parsedData, err := parser.ParseData(read)
-	if err != nil {
-		return fmt.Errorf("failed to parse the data  : %v", err)
-	}
-	var fareEstimation [][]string
-	for row := range parsedData {
-		estimation := farecalculation.CalculateFare(parsedData[row])
-		mySlice := []string{estimation.IDRide, fmt.Sprintf("%.2f", estimation.Total)}
-		fareEstimation = append(fareEstimation, mySlice)
-	}
-	utils.WriteToFile(outPath, fareEstimation)
+	parsedData, parsedDataError := parser.ParseData(read)
+
+	fmt.Println(parsedDataError)
+	fmt.Println(parsedData)
+
+	/*	var fareEstimation [][]string
+		for row := range parsedData {
+			estimation := farecalculation.CalculateFare(parsedData[row])
+			mySlice := []string{estimation.IDRide, fmt.Sprintf("%.2f", estimation.Total)}
+			fareEstimation = append(fareEstimation, mySlice)
+		}
+		utils.WriteToFile(outPath, fareEstimation)*/
 
 	return nil
 }

@@ -6,50 +6,52 @@ import (
 	"thaBeat/ride/model"
 )
 
-func ParseData(input [][]string) ([]model.Ride, error) {
+func ParseData(input [][]string) (<-chan model.Ride, <-chan error) {
 
-	var locations []model.Signal
-	var ride []model.Ride
-	var id string
+	ridePositions := make(chan model.Ride)
+	channelError := make(chan error)
 
-	for row := range input {
+	go func() {
+		var locations []model.Signal
+		var rides model.Ride
+		var id string
 
-		// parse every row in order to get the id and the locations
-		currentID, currentLocation, err := parseRow(input[row])
-
-		//check for errors during the parsing
-		if err != nil {
-			return nil, fmt.Errorf("wrong data sended to parser; error: %v", err)
-		}
-
-		// in case the file contains data for different id_rides
-		if len(locations) != 0 && id != currentID {
-			rides := model.Ride{
-				ID:              id,
-				LocationSignals: locations,
+		for row := range input {
+			// parse every row in order to get the id and the locations
+			currentID, currentLocation, err := parsePosition(input[row])
+			//check for errors during the parsing
+			if err != nil {
+				channelError <- fmt.Errorf("wrong data sended to parser; error: %v", err)
 			}
-			// append the data at ride
-			ride = append(ride, rides)
-			// empty the locations in order to add the
-			// new data from the new id_ride
-			locations = []model.Signal{}
+			// in case the file contains data for different id_rides
+			if len(locations) != 0 && id != currentID {
+				rides := model.Ride{
+					ID:              id,
+					LocationSignals: locations,
+				}
+				// append the data at ride
+				ridePositions <- rides
+				// empty the locations in order to add the
+				// new data from the new id_ride
+				locations = []model.Signal{}
+			}
+			id = currentID
+			locations = append(locations, *currentLocation)
 		}
-		id = currentID
-		locations = append(locations, *currentLocation)
+		//for the last ride_id ,or in case thee file contains positions for only one ride
+		rides = model.Ride{
+			ID:              id,
+			LocationSignals: locations,
+		}
+		ridePositions <- rides
+	}()
 
-	}
-
-	rides := model.Ride{
-		ID:              id,
-		LocationSignals: locations,
-	}
-
-	ride = append(ride, rides)
-
-	return ride, nil
+	return ridePositions, channelError
 }
 
-func parseRow(row []string) (string, *model.Signal, error) {
+//parsePosition gets as argument a slice of strings .
+//transform the strings to Signal Struct
+func parsePosition(row []string) (string, *model.Signal, error) {
 
 	id := row[0]
 	latitude, errLat := strconv.ParseFloat(row[1], 64)

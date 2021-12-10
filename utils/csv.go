@@ -11,14 +11,14 @@ import (
 
 // ReadFromFile gets a file path as parameter, opens a csv file, reads it
 func ReadFromFile(path string) ([][]string, error) {
-	fullpath, err := filepath.Abs(path)
+	fullPath, err := filepath.Abs(path)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
 	}
 
-	file, err := os.Open(fullpath)
+	file, err := os.Open(fullPath)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to open file: %v; err: %v ", fullpath, err)
+		return nil, fmt.Errorf("Failed to open file: %v; err: %v ", fullPath, err)
 	}
 
 	reader := csv.NewReader(bufio.NewReader(file))
@@ -31,18 +31,18 @@ func ReadFromFile(path string) ([][]string, error) {
 
 // WriteToFile gets a file name  and writes them in a file
 func WriteToFile(path string, input [][]string) error {
-	fullpath, err := filepath.Abs(path)
+	fullPath, err := filepath.Abs(path)
 	if err != nil {
 		return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
 	}
 
-	dirpath := filepath.Dir(fullpath)
-	err = os.MkdirAll(dirpath, os.ModePerm)
+	dirPath := filepath.Dir(fullPath)
+	err = os.MkdirAll(dirPath, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
 	}
 
-	file, err := os.Create(fullpath)
+	file, err := os.Create(fullPath)
 	if err != nil {
 		return fmt.Errorf("cannot create file; err: %v", err)
 	}
