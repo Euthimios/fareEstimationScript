@@ -3,19 +3,19 @@ package fareCalculation
 import (
 	"fmt"
 	"math"
+	"thaBeat/ride/haversine"
 	"thaBeat/ride/model"
 	"time"
 )
 
 const (
-	earthRadius          = float64(6371000) // const for harvesine
-	minSpeed             = float64(10)      // defines the idle
-	maxSpeed             = float64(100)     // max speed in order to remove from the set
-	flagRate             = float64(1.3)     //default charge
-	idleHourRate         = float64(11.90)   // idle charge
-	movingRateDayShift   = float64(0.74)    // day  sift charge
-	movingRateNightShift = float64(1.30)    // night sift charge
-	minTotal             = float64(3.47)    // minimum ride fare
+	minSpeed             = float64(10)    // defines the idle
+	maxSpeed             = float64(100)   // max speed in order to remove from the set
+	flagRate             = float64(1.3)   //default charge
+	idleHourRate         = float64(11.90) // idle charge
+	movingRateDayShift   = float64(0.74)  // day  sift charge
+	movingRateNightShift = float64(1.30)  // night sift charge
+	minTotal             = float64(3.47)  // minimum ride fare
 )
 
 func CalculateFare(inputCh <-chan model.Ride) <-chan []string {
@@ -29,20 +29,24 @@ func CalculateFare(inputCh <-chan model.Ride) <-chan []string {
 			for i := 0; i < length-1; i++ {
 				for j := i + 1; j < length; j++ {
 
-					startSignal := ride.LocationSignals[i]
-					endSignal := ride.LocationSignals[j]
+					startPoint := ride.LocationSignals[i]
+					endPoint := ride.LocationSignals[j]
+
+					origin := haversine.Point{Lat: startPoint.Latitude, Lon: startPoint.Longitude}
+					position := haversine.Point{Lat: endPoint.Latitude, Lon: endPoint.Longitude}
 
 					//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
-					deltaTimeSeconds := float64(endSignal.Timestamp - startSignal.Timestamp)
+					deltaTimeSeconds := float64(endPoint.Timestamp - startPoint.Timestamp)
 					//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
-					deltaDistanceKm := calculateHaversine(startSignal.Longitude, startSignal.Latitude, endSignal.Longitude, endSignal.Latitude)
+					deltaDistanceKm := haversine.Distance(origin, position)
+
 					// calculate the segment’s speed in khm
 					speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
 
 					//if speed is > 100km/h remove the second element from the set
 					if speed > maxSpeed {
 						i++
-						// skip the corrupted point
+						// skip the  point
 						continue
 					}
 
@@ -53,7 +57,7 @@ func CalculateFare(inputCh <-chan model.Ride) <-chan []string {
 					}
 
 					// calculate distance rate by hour
-					if isDayRide(startSignal.Timestamp) {
+					if isDayRide(startPoint.Timestamp) {
 						total += deltaDistanceKm * movingRateDayShift
 					} else {
 						total += deltaDistanceKm * movingRateNightShift
@@ -75,26 +79,8 @@ func CalculateFare(inputCh <-chan model.Ride) <-chan []string {
 func isDayRide(timestamp int32) bool {
 	t := time.Unix(int64(timestamp), 0).UTC()
 	hour := t.Hour()
-
 	if hour >= 5 && hour < 24 {
 		return true
 	}
-
 	return false
-}
-
-// calculateHaversine will calculate the spherical distance as the
-// crow flies between lat and lon for two given points in km by the Haversine formula
-func calculateHaversine(lonFrom float64, latFrom float64, lonTo float64, latTo float64) (distance float64) {
-	var deltaLat = (latTo - latFrom) * (math.Pi / 180)
-	var deltaLon = (lonTo - lonFrom) * (math.Pi / 180)
-
-	var a = math.Sin(deltaLat/2)*math.Sin(deltaLat/2) +
-		math.Cos(latFrom*(math.Pi/180))*math.Cos(latTo*(math.Pi/180))*
-			math.Sin(deltaLon/2)*math.Sin(deltaLon/2)
-	var c = 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-
-	distance = earthRadius * c
-
-	return
 }

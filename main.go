@@ -36,9 +36,11 @@ func estimator(inPath string, outPath string) error {
 	parsedData, parsedDataError := parser.ParseData(read)
 	fareByRide := fareCalculation.CalculateFare(parsedData)
 	done, writeToFileError, err := utils.WriteToFile(outPath, fareByRide)
+
 	if err != nil {
 		return fmt.Errorf("error during file write , err: %v", err)
 	}
+
 	select {
 	case err := <-parsedDataError:
 		if err != nil {

@@ -1,4 +1,4 @@
-package harvesine
+package haversine
 
 import (
 	"math"
