@@ -32,9 +32,8 @@ func estimator(inPath string, outPath string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
-
 	parsedData, parsedDataError := parser.ParseData(read)
-	fareByRide := fareCalculation.CalculateFare(parsedData)
+	fareByRide := fareCalculation.GetCalculatedFare(parsedData)
 	done, writeToFileError, err := utils.WriteToFile(outPath, fareByRide)
 
 	if err != nil {
