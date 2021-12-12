@@ -6,7 +6,7 @@ import (
 	"thaBeat/internal/app/thaBeat/ride"
 )
 
-func ParseData(input [][]string) ([]ride.Ride, error) {
+func ParseData(input [][]string) []ride.Ride {
 
 	var locations []ride.Point
 	var rides []ride.Ride
@@ -16,13 +16,11 @@ func ParseData(input [][]string) ([]ride.Ride, error) {
 
 		// parse every row in order to get the id and the locations
 		currentID, currentLocation, err := parseRow(input[row])
-
 		//check for errors during the parsing
 		if err != nil {
 			fmt.Printf("wrong data sended to parser; error: %v", err)
 			continue
 		}
-
 		// in case the file contains data for different id_rides
 		if len(locations) != 0 && id != currentID {
 			r := ride.Ride{
@@ -37,7 +35,6 @@ func ParseData(input [][]string) ([]ride.Ride, error) {
 		}
 		id = currentID
 		locations = append(locations, *currentLocation)
-
 	}
 
 	r := ride.Ride{
@@ -47,7 +44,7 @@ func ParseData(input [][]string) ([]ride.Ride, error) {
 
 	rides = append(rides, r)
 
-	return rides, nil
+	return rides
 }
 
 func parseRow(row []string) (string, *ride.Point, error) {
