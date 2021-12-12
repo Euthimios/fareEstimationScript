@@ -9,17 +9,7 @@ import (
 )
 
 func main() {
-
-	flag.Usage = func() {
-		fmt.Printf(" Fare Ride Calculation Script\n")
-		fmt.Printf(" Please read bellow how to use the script , and how to use the arguments\n\n")
-		flag.PrintDefaults()
-	}
-
-	inPath := flag.String("inPath", "files/input.csv", "pleas enter the path for the file that has the Ride data")
-	outPath := flag.String("outPath", "files/output.csv", "please enter the path for the file that will have the calculated data for each Ride")
-	flag.Parse()
-
+	inPath, outPath := prepare()
 	err := estimator(*inPath, *outPath)
 	if err != nil {
 		panic(err)
@@ -52,4 +42,17 @@ func estimator(inPath string, outPath string) error {
 	case <-done:
 	}
 	return nil
+}
+
+func prepare() (*string, *string) {
+	flag.Usage = func() {
+		fmt.Printf(" Fare Ride Calculation Script\n")
+		fmt.Printf(" Please read bellow how to use the script , and how to use the arguments\n\n")
+		flag.PrintDefaults()
+	}
+
+	inPath := flag.String("inPath", "files/input.csv", "pleas enter the path for the file that has the Ride data")
+	outPath := flag.String("outPath", "files/output.csv", "please enter the path for the file that will have the calculated data for each Ride")
+	flag.Parse()
+	return inPath, outPath
 }

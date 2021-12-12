@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -24,7 +23,7 @@ func ReadFromFile(path string) ([][]string, error) {
 	reader := csv.NewReader(bufio.NewReader(file))
 	data, err := reader.ReadAll()
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("Failed to read from file: %v; err: %v ", fullPath, err)
 	}
 	return data, nil
 }
