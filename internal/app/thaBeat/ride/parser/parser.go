@@ -52,6 +52,10 @@ func ParseData(input [][]string) ([]ride.Ride, error) {
 
 func parseRow(row []string) (string, *ride.Point, error) {
 
+	if len(row) != 4 {
+		return "", nil, fmt.Errorf("expectd 4 elements but row hasn't: %v", row)
+	}
+
 	id := row[0]
 	latitude, errLat := strconv.ParseFloat(row[1], 64)
 	longitude, errLon := strconv.ParseFloat(row[2], 64)
