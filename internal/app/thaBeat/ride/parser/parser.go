@@ -3,13 +3,13 @@ package parser
 import (
 	"fmt"
 	"strconv"
-	"thaBeat/ride/model"
+	"thaBeat/internal/app/thaBeat/ride"
 )
 
-func ParseData(input [][]string) ([]model.Ride, error) {
+func ParseData(input [][]string) ([]ride.Ride, error) {
 
-	var locations []model.Signal
-	var ride []model.Ride
+	var locations []ride.Point
+	var rides []ride.Ride
 	var id string
 
 	for row := range input {
@@ -19,37 +19,38 @@ func ParseData(input [][]string) ([]model.Ride, error) {
 
 		//check for errors during the parsing
 		if err != nil {
-			return nil, fmt.Errorf("wrong data sended to parser; error: %v", err)
+			fmt.Printf("wrong data sended to parser; error: %v", err)
+			continue
 		}
 
 		// in case the file contains data for different id_rides
 		if len(locations) != 0 && id != currentID {
-			rides := model.Ride{
-				ID:              id,
-				LocationSignals: locations,
+			r := ride.Ride{
+				ID:     id,
+				Points: locations,
 			}
 			// append the data at ride
-			ride = append(ride, rides)
+			rides = append(rides, r)
 			// empty the locations in order to add the
 			// new data from the new id_ride
-			locations = []model.Signal{}
+			locations = []ride.Point{}
 		}
 		id = currentID
 		locations = append(locations, *currentLocation)
 
 	}
 
-	rides := model.Ride{
-		ID:              id,
-		LocationSignals: locations,
+	r := ride.Ride{
+		ID:     id,
+		Points: locations,
 	}
 
-	ride = append(ride, rides)
+	rides = append(rides, r)
 
-	return ride, nil
+	return rides, nil
 }
 
-func parseRow(row []string) (string, *model.Signal, error) {
+func parseRow(row []string) (string, *ride.Point, error) {
 
 	id := row[0]
 	latitude, errLat := strconv.ParseFloat(row[1], 64)
@@ -60,7 +61,7 @@ func parseRow(row []string) (string, *model.Signal, error) {
 		return "", nil, fmt.Errorf("failed to parse row")
 	}
 
-	return id, &model.Signal{
+	return id, &ride.Point{
 		Latitude:  latitude,
 		Longitude: longitude,
 		Timestamp: int32(timestamp),
