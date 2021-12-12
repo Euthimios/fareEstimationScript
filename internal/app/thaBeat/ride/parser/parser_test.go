@@ -7,13 +7,6 @@ import (
 	"thaBeat/internal/app/thaBeat/ride"
 )
 
-type parsePositionRow struct {
-	row           []string
-	expectedID    string
-	expectedPoint *ride.Point
-	expectedError error
-}
-
 type parseDataResponse struct {
 	testData     [][]string
 	expectedData []ride.Ride
@@ -41,21 +34,27 @@ var positions = []parseDataResponse{
 	},
 }
 
+func TestParseData(t *testing.T) {
+	for _, pos := range positions {
+		result := ParseData(pos.testData)
+		if !reflect.DeepEqual(result, pos.expectedData) {
+			t.Errorf("[TestParseData] Failed: unexpected position data, expected :%v  , got %v, ", pos.expectedData, result)
+		}
+	}
+}
+
+type parsePositionRow struct {
+	row           []string
+	expectedID    string
+	expectedPoint *ride.Point
+	expectedError error
+}
+
 var rows = []parsePositionRow{
 	{[]string{"123", "38.018001", "23.730222", "1405591942"}, "123", &ride.Point{Latitude: 38.018001, Longitude: 23.730222, Timestamp: 1405591942}, nil},
 	{[]string{"1234", "38.021894", "23.735748", "1405592246"}, "1234", &ride.Point{Latitude: 38.021894, Longitude: 23.735748, Timestamp: 1405592246}, nil},
 	{[]string{"14", "37.964168", "23.726123"}, "", nil, errors.New(" failed to parse row")},
 	{[]string{"112344", "37.964168", "23.726123"}, "", nil, errors.New("expectd 4 elements but row hasn't")},
-}
-
-func TestParseData(t *testing.T) {
-
-	for _, pos := range positions {
-		result := ParseData(pos.testData)
-		if !reflect.DeepEqual(result, pos.expectedData) {
-			t.Errorf("unexpected position data, expected :%v  , got %v, ", pos.expectedData, result)
-		}
-	}
 }
 
 func TestParseRow(t *testing.T) {
@@ -64,15 +63,15 @@ func TestParseRow(t *testing.T) {
 		id, result, err := parseRow(test.row)
 
 		if id != test.expectedID {
-			t.Errorf(" Parsing Failed: expect  : %v, and  get : %v", test.expectedID, id)
+			t.Errorf(" [TestParseRow] Failed: Parsing Failed, expect  : %v, and  get : %v", test.expectedID, id)
 		}
 
 		if result != nil && test.expectedPoint != nil && *result != *test.expectedPoint {
-			t.Errorf(" Parsing Failed: expect : %v, and  get : %v", test.expectedID, id)
+			t.Errorf(" [TestParseRow] Failed : Parsing Failed, expect : %v, and  get : %v", test.expectedID, id)
 		}
 
 		if err == nil && test.expectedPoint == nil {
-			t.Errorf(" Parsing Failed: expect : %v, and  get : %v", test.expectedID, id)
+			t.Errorf(" [TestParseRow] Failed : Parsing Failed, expect : %v, and  get : %v", test.expectedID, id)
 		}
 	}
 }
