@@ -44,7 +44,7 @@ longitudes and latitudes.You can learn more about Haversine [here](https://en.wi
 │          ├── haversine
 │          │    ├── haversine.go
 │          │    └── haversine_test.go
-│          ├── ride
+│          └── ride
 │                ├── farecalculation
 │                │   ├── farecalculation.go
 │                │   └── farecalculation_test.go
