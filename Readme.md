@@ -75,7 +75,7 @@ Into the /internal folder is located the application code. For each .go file you
 which has the unit tests .They test the  components by all possible means and compares the result to the
 expected output. The tests written with out assertion , in order  to write the logic to test the results of the unit components.
 
-Additional test data can be found at folder /test/testdata. Also at the same folder is located the coverage report
+Additional test data can be found at folder `/test/testdata`. Also at the same folder is located the `coverage report`
 
 To run all tests:
 
