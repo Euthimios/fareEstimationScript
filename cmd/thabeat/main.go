@@ -54,7 +54,7 @@ func prepare() (string, string) {
 		flag.PrintDefaults()
 	}
 
-	input := flag.String("in", inputFile, "pleas enter the path for the file that has the Ride data")
+	input := flag.String("in", inputFile, "please enter the path for the file that has the Ride data")
 	output := flag.String("out", outputFile, "please enter the path for the file that will have the calculated data for each Ride")
 	flag.Parse()
 	return *input, *output
