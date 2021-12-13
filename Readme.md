@@ -24,8 +24,51 @@ You can lear more about the GO Programming language here :
  * Download and install Go from [here](https://golang.org/doc/install)
 
 Also the algorithm  makes use of the Haversine distance formula .
-The haversine formula determines the great-circle distance between two points on a sphere given their
+The Haversine Formula determines the great-circle distance between two points on a sphere given their
 longitudes and latitudes.You can learn more about Haversine [here](https://en.wikipedia.org/wiki/Haversine_formula)
+
+### Layout
+
+```tree
+├── README.md
+├── cmd
+│   └── thabeat
+│       ├── main.go
+│       └── main_test.go
+├── csv
+│   ├── csv.qo
+│   └── csv_test.go
+├── internal
+│   └── app
+│      └── thabeat
+│          ├── haversine
+│          │    ├── haversine.go
+│          │    └── haversine_test.go
+│          ├── ride
+│                ├── farecalculation
+│                │   ├── farecalculation.go
+│                │   └── farecalculation_test.go
+│                ├── parser
+│                │   ├── parser.go
+│                │   └── parser_test.go
+│                └── ride.go
+├──resources
+│
+└── test
+    └── testdata
+
+
+```
+A brief description of the layout:
+
+* `README.md` is a detailed description of the project.
+* `cmd` contains main packages with it's unit test file.
+* `csv` contains code for the read / write actions of the CSV Files with it's unit test file.
+* `internal` application and library code.
+* `resources` contains the default input / output files.
+* `test` holds all tests data.
+
+
 ## Tests
 
 Into the /internal folder is located the application code. For each .go file you can find the _test.go file
