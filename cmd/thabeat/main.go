@@ -32,7 +32,7 @@ func Estimator(input string, output string) error {
 	}
 	err = csv.WriteToFile(output, fareEstimation)
 	if err != nil {
-		return fmt.Errorf("Error writing to file: %s", err)
+		return fmt.Errorf("error writing to file: %s", err)
 	}
 
 	return nil
