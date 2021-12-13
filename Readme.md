@@ -1,5 +1,9 @@
 # Ride Fare Estimation Script
 
+Ride Fare Estimation Script implements an automated way of estimating the fare for each ride so that can flag
+suspicious rides for review by the support teams.The fare estimation algorithm is capable of detecting erroneous
+coordinates and removing them before attempting to evaluate the ride fare.
+
 Ride Fare Estimation Script accepts as arguments two files of type CSV. An input file with records in format of type
 (id_ride, lat, lng, timestamp), creates the calculation for each id_ride and writes down in the second argument file the
 information in format (id_ride, fare_estimate).
@@ -19,6 +23,9 @@ You can lear more about the GO Programming language here :
 
  * Download and install Go from [here](https://golang.org/doc/install)
 
+Also the algorithm  makes use of the Haversine distance formula .
+The haversine formula determines the great-circle distance between two points on a sphere given their
+longitudes and latitudes.You can learn more about Haversine [here](https://en.wikipedia.org/wiki/Haversine_formula)
 ## Tests
 
 Into the /internal folder is located the application code. For each .go file you can find the _test.go file
