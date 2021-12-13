@@ -16,13 +16,14 @@ type FareRide struct {
 const (
 	minSpeed             = float64(10)    // defines the idle
 	maxSpeed             = float64(100)   // max speed in order to remove from the set
-	flagRate             = float64(1.3)   //default charge
+	flagRate             = float64(1.3)   // default charge
 	idleHourRate         = float64(11.90) // idle charge
 	movingRateDayShift   = float64(0.74)  // day  sift charge
 	movingRateNightShift = float64(1.30)  // night sift charge
 	minTotal             = float64(3.47)  // minimum ride fare
 )
 
+// CalculateFare gets as parameter Ride objects and for each of them a fare is calculated
 func CalculateFare(ride ride.Ride) *FareRide {
 
 	total := flagRate

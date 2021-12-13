@@ -6,12 +6,10 @@ import (
 	"thaBeat/internal/app/thaBeat/ride"
 )
 
-type IsDayRideResult struct {
+var isDayRideResult = []struct {
 	timestamp int32
 	expected  bool
-}
-
-var isDayRideResult = []IsDayRideResult{
+}{
 	{1639316817, true},
 	{1639342017, true},
 	{1639356417, false},
@@ -28,12 +26,10 @@ func TestIsDayRide(t *testing.T) {
 	}
 }
 
-type CalculateFareResult struct {
+var estimateResults = []struct {
 	ride     ride.Ride
 	expected *FareRide
-}
-
-var estimateResults = []CalculateFareResult{
+}{
 	{ride.Ride{ID: "a", Points: []ride.Point{{38.020539, 23.729497, 1405592080}, {38.019564, 25.735323, 1405594132}}}, &FareRide{IDRide: "a", Total: 3.47}},
 	{ride.Ride{ID: "123", Points: []ride.Point{{38.019326, 23.72896, 1638690560}, {38.019397, 23.728953, 1638690960}}}, &FareRide{IDRide: "123", Total: 7.159777115033196}},
 	{ride.Ride{ID: "1235", Points: []ride.Point{{38.019576, 23.735345, 1638665085}, {38.019562, 23.735345, 1638665506}}}, &FareRide{IDRide: "1235", Total: 3.47}},

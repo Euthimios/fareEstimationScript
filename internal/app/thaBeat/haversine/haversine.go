@@ -34,6 +34,8 @@ func degreesToRadians(degrees float64) float64 {
 	return degrees * math.Pi / 180
 }
 
+// Distance will calculate the spherical distance as the
+// crow flies between lat and lon for two given points by the Haverstine formula
 func Distance(origin, position Point) float64 {
 	origin = origin.toRadians()
 	position = position.toRadians()

@@ -9,13 +9,11 @@ import (
 	"testing"
 )
 
-type read struct {
+var testRead = []struct {
 	name     string
 	expected [][]string
 	filePath string
-}
-
-var testRead = []read{
+}{
 	{name: "wrong file path", expected: [][]string{}, filePath: "wrong file path"},
 	{name: "wrong file path", expected: [][]string{}, filePath: "test/testdata/minorset.csv"},
 	{name: "malformed data csv", expected: [][]string{}, filePath: "../test/testdata/malformed.csv"},
@@ -40,13 +38,11 @@ func TestReadFromFile(t *testing.T) {
 	}
 }
 
-type write struct {
+var testWrite = []struct {
 	name      string
 	inputData [][]string
 	filePath  string
-}
-
-var testWrite = []write{
+}{
 	{name: "Could not create path", inputData: [][]string{}, filePath: "/terst/±±±!!@@!!/!!!!@@@/##@@"},
 	{name: "Cannot create file", inputData: [][]string{}, filePath: ""},
 	{name: "Correct Data,file path",
@@ -69,7 +65,6 @@ func TestWriteToFile(t *testing.T) {
 }
 
 // fileComparison compares two files row by row without avoiding the load of the entire files in memory
-// taken, tested and improved from: stack overflow
 func fileComparison(file1, file2 string) bool {
 
 	sf, err := os.Open(file1)

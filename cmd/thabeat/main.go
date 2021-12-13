@@ -8,6 +8,11 @@ import (
 	"thaBeat/internal/app/thaBeat/ride/parser"
 )
 
+const (
+	inputFile  = "resources/input.csv"
+	outputFile = "resources/output.csv"
+)
+
 func main() {
 
 	input, output := prepare()
@@ -19,17 +24,21 @@ func main() {
 }
 
 func Estimator(input string, output string) error {
+	var fareEstimation [][]string
+	// read from file
 	read, err := csv.ReadFromFile(input)
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
+	// parse the data  from the file into a Ride structure
 	rides := parser.ParseData(read)
-	var fareEstimation [][]string
+	// for each Ride proceed with fare calculation
 	for _, ride := range rides {
 		rideEstimation := farecalculation.CalculateFare(ride)
 		stringEstimation := []string{rideEstimation.IDRide, fmt.Sprintf("%.2f", rideEstimation.Total)}
 		fareEstimation = append(fareEstimation, stringEstimation)
 	}
+	// write the data at  desired file
 	err = csv.WriteToFile(output, fareEstimation)
 	if err != nil {
 		return fmt.Errorf("error writing to file: %s", err)
@@ -45,8 +54,8 @@ func prepare() (string, string) {
 		flag.PrintDefaults()
 	}
 
-	input := flag.String("in", "resources/input.csv", "pleas enter the path for the file that has the Ride data")
-	output := flag.String("out", "resources/output.csv", "please enter the path for the file that will have the calculated data for each Ride")
+	input := flag.String("in", inputFile, "pleas enter the path for the file that has the Ride data")
+	output := flag.String("out", outputFile, "please enter the path for the file that will have the calculated data for each Ride")
 	flag.Parse()
 	return *input, *output
 }

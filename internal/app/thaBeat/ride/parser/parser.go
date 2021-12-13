@@ -6,6 +6,7 @@ import (
 	"thaBeat/internal/app/thaBeat/ride"
 )
 
+// ParseData gets as parameter string arrays and for each of them a Ride struct is generated
 func ParseData(input [][]string) []ride.Ride {
 
 	var locations []ride.Point
@@ -36,17 +37,16 @@ func ParseData(input [][]string) []ride.Ride {
 		id = currentID
 		locations = append(locations, *currentLocation)
 	}
-
+	//for the last ride_id ,or in case thee file contains points for only one ride
 	r := ride.Ride{
 		ID:     id,
 		Points: locations,
 	}
-
 	rides = append(rides, r)
-
 	return rides
 }
 
+// parseRow parse each row into a ride.Point struct
 func parseRow(row []string) (string, *ride.Point, error) {
 
 	if len(row) != 4 {
