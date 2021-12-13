@@ -64,7 +64,7 @@ A brief description of the layout:
 * `README.md` is a detailed description of the project.
 * `cmd` contains main packages with it's unit test file.
 * `csv` contains code for the read / write actions of the CSV Files with it's unit test file.
-* `internal` application and library code.
+* `internal` application and library code with it's unit test files.
 * `resources` contains the default input / output files.
 * `test` holds all tests data.
 
