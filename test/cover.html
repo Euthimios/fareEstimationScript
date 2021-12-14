@@ -314,17 +314,17 @@ import (
 
 // ReadFromFile gets a file path as parameter, opens a csv file, reads it
 func ReadFromFile(path string) ([][]string, error) <span class="cov8" title="1">{
-
+        // absolute representation of the specified path
         fullPath, err := filepath.Abs(path)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
         }</span>
-
+        //open the file
         <span class="cov8" title="1">file, err := os.Open(fullPath)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("Failed to open file: %v; err: %v ", fullPath, err)
         }</span>
-
+        // read the file
         <span class="cov8" title="1">reader := csv.NewReader(bufio.NewReader(file))
         data, err := reader.ReadAll()
         if err != nil </span><span class="cov8" title="1">{
@@ -335,25 +335,28 @@ func ReadFromFile(path string) ([][]string, error) <span class="cov8" title="1">
 
 // WriteToFile gets a file name  and writes them in a file
 func WriteToFile(path string, input [][]string) error <span class="cov8" title="1">{
+        // absolute representation of the specified path
         fullPath, err := filepath.Abs(path)
         if err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
         }</span>
 
         <span class="cov8" title="1">dirPath := filepath.Dir(fullPath)
+        // create path
         err = os.MkdirAll(dirPath, os.ModePerm)
         if err != nil </span><span class="cov8" title="1">{
                 return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
         }</span>
-
+        // create file
         <span class="cov8" title="1">file, err := os.Create(fullPath)
         if err != nil </span><span class="cov8" title="1">{
                 return fmt.Errorf("cannot create file; err: %v", err)
         }</span>
-
+        // create a new writer
         <span class="cov8" title="1">writer := csv.NewWriter(file)
 
         for row := range input </span><span class="cov8" title="1">{
+                // write to csv
                 err := writer.Write(input[row])
                 if err != nil </span><span class="cov0" title="0">{
                         return fmt.Errorf("cannot write row in file; err: %v", err)
@@ -374,16 +377,19 @@ import (
 
 var earthRadiusMetres float64 = 6371000
 
+// Point provides information for a location
 type Point struct {
         Lat float64
         Lon float64
 }
 
+// Delta struct represents the delta between points
 type Delta struct {
         Lat float64
         Lon float64
 }
 
+// Delta method calculates the delta between starting and end point
 func (p Point) Delta(point Point) Delta <span class="cov8" title="1">{
         return Delta{
                 Lat: p.Lat - point.Lat,
@@ -391,6 +397,7 @@ func (p Point) Delta(point Point) Delta <span class="cov8" title="1">{
         }
 }</span>
 
+// toRadians method transforms a point coordinate system (lat/long) to radian
 func (p Point) toRadians() Point <span class="cov8" title="1">{
         return Point{
                 Lat: degreesToRadians(p.Lat),
@@ -398,12 +405,13 @@ func (p Point) toRadians() Point <span class="cov8" title="1">{
         }
 }</span>
 
+// degreesToRadians transforms lat/log to radian
 func degreesToRadians(degrees float64) float64 <span class="cov8" title="1">{
         return degrees * math.Pi / 180
 }</span>
 
 // Distance will calculate the spherical distance as the
-// crow flies between lat and lon for two given points by the Haverstine formula
+// crow flies between lat and lon for two given points by the Haversine formula in khm
 func Distance(origin, position Point) float64 <span class="cov8" title="1">{
         origin = origin.toRadians()
         position = position.toRadians()
@@ -413,7 +421,7 @@ func Distance(origin, position Point) float64 <span class="cov8" title="1">{
         a := math.Pow(math.Sin(change.Lat/2), 2) + math.Cos(origin.Lat)*math.Cos(position.Lat)*math.Pow(math.Sin(change.Lon/2), 2)
 
         c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-        return earthRadiusMetres * c
+        return (earthRadiusMetres * c) / 1000
 }</span>
 </pre>
 		

@@ -30,6 +30,9 @@ var estimateResults = []struct {
 	ride     ride.Ride
 	expected FareRide
 }{{ride.Ride{ID: "1", Points: []ride.Point{}}, FareRide{IDRide: "1", Total: 1.3}},
+	{ride.Ride{ID: "231", Points: []ride.Point{{38.019337, 23.7281, 1638690560}, {38.019326, 23.72896, 1638690560}}}, FareRide{IDRide: "231", Total: 3.47}},
+	{ride.Ride{ID: "21", Points: []ride.Point{{38.018001, 23.730222, 1405591952}, {38.018106, 23.729468, 1405591960}}}, FareRide{IDRide: "21", Total: 3.47}},
+	{ride.Ride{ID: "241", Points: []ride.Point{{38.018001, 23.730222, 1639441708}, {38.018106, 23.729468, 1639441715}}}, FareRide{IDRide: "241", Total: 3.47}},
 	{ride.Ride{ID: "2", Points: []ride.Point{{38.018001, 23.730222, 1405591942}, {38.018001, 23.730222, 1405591952}}}, FareRide{IDRide: "2", Total: 3.47}},
 	{ride.Ride{ID: "123", Points: []ride.Point{{38.018011, 23.730212, 1638690233}, {38.018011, 23.730212, 1638690243}}}, FareRide{IDRide: "123", Total: 3.47}},
 	{ride.Ride{ID: "1243", Points: []ride.Point{{38.019576, 23.735345, 1639442756}, {38.019562, 23.736212, 1639443476}}}, FareRide{IDRide: "1243", Total: 3.6800000000000006}},
