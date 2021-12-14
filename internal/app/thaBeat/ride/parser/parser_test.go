@@ -45,7 +45,7 @@ var rows = []struct {
 }{
 	{[]string{"123", "38.018001", "23.730222", "1405591942"}, "123", &ride.Point{Latitude: 38.018001, Longitude: 23.730222, Timestamp: 1405591942}, nil},
 	{[]string{"1234", "38.021894", "23.735748", "1405592246"}, "1234", &ride.Point{Latitude: 38.021894, Longitude: 23.735748, Timestamp: 1405592246}, nil},
-	{[]string{"14", "37.964168", "23.726123"}, "", nil, errors.New(" failed to parse row")},
+	{[]string{"14", "37.964168", "23.726123", "nil"}, "", nil, errors.New(" failed to parse row")},
 	{[]string{"112344", "37.964168", "23.726123"}, "", nil, errors.New("expectd 4 elements but row hasn't")},
 }
 

@@ -63,7 +63,7 @@
 				
 				<option value="file3">thaBeat/internal/app/thaBeat/ride/farecalculation/farecalculation.go (100.0%)</option>
 				
-				<option value="file4">thaBeat/internal/app/thaBeat/ride/parser/parser.go (96.2%)</option>
+				<option value="file4">thaBeat/internal/app/thaBeat/ride/parser/parser.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -133,7 +133,7 @@ func prepare() (string, string) <span class="cov8" title="1">{
                 flag.PrintDefaults()
         }</span>
 
-        <span class="cov8" title="1">input := flag.String("in", inputFile, "pleas enter the path for the file that has the Ride data")
+        <span class="cov8" title="1">input := flag.String("in", inputFile, "please enter the path for the file that has the Ride data")
         output := flag.String("out", outputFile, "please enter the path for the file that will have the calculated data for each Ride")
         flag.Parse()
         return *input, *output</span>
@@ -273,7 +273,7 @@ type FareRide struct {
 const (
         minSpeed             = float64(10)    // defines the idle
         maxSpeed             = float64(100)   // max speed in order to remove from the set
-        flagRate             = float64(1.3)   //default charge
+        flagRate             = float64(1.3)   // default charge
         idleHourRate         = float64(11.90) // idle charge
         movingRateDayShift   = float64(0.74)  // day  sift charge
         movingRateNightShift = float64(1.30)  // night sift charge
@@ -402,7 +402,7 @@ func parseRow(row []string) (string, *ride.Point, error) <span class="cov8" titl
         longitude, errLon := strconv.ParseFloat(row[2], 64)
         timestamp, errTime := strconv.ParseInt(row[3], 10, 32)
 
-        if errLat != nil || errLon != nil || errTime != nil </span><span class="cov0" title="0">{
+        if errLat != nil || errLon != nil || errTime != nil </span><span class="cov8" title="1">{
                 return "", nil, fmt.Errorf("failed to parse row")
         }</span>
 
