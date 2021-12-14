@@ -93,4 +93,7 @@ Usage:
 Flags:
       in   the path for the file that has the Ride data ,ex : assets/input.csv
       out  the path for the file that will have the calculated data for each Ride , ex :assets/output.csv
+
+      to print a usage message with all defined command-line flags execute :
+      go run .cmd/thabeat/main.go  -h
 ```
