@@ -87,7 +87,7 @@ go test ./...
 ```bash
 
 Usage:
-  go run .cmd/thabeat/main.go  -in="inpath" -out="outpath"
+  `go run .cmd/thabeat/main.go  -in="inpath" -out="outpath"`
 
 
 Flags:
@@ -95,5 +95,5 @@ Flags:
       out  the path for the file that will have the calculated data for each Ride , ex :assets/output.csv
 
       to print a usage message with all defined command-line flags execute :
-      go run .cmd/thabeat/main.go  -h
+      `go run .cmd/thabeat/main.go  -h`
 ```
