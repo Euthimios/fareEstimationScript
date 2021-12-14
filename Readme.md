@@ -4,7 +4,7 @@ Ride Fare Estimation Script implements an automated way of estimating the fare f
 suspicious rides for review by the support teams.The fare estimation algorithm is capable of detecting erroneous
 coordinates and removing them before attempting to evaluate the ride fare.
 
-Ride Fare Estimation Script accepts as arguments two files of type CSV. An input file with records in format of type
+Accepts as arguments two files of type CSV. An input file with records in format of type
 (id_ride, lat, lng, timestamp), creates the calculation for each id_ride and writes down in the second argument file the
 information in format (id_ride, fare_estimate).
 
@@ -12,7 +12,7 @@ information in format (id_ride, fare_estimate).
 
 It follows the basic layout for Go application projects ,
 as it's described [here](https://github.com/golang-standards/project-layout)
-It's not an official standard defined by thee core GO Dev Team.
+It's not an official standard defined by the core GO Dev Team.
 
 ## Tech
 
