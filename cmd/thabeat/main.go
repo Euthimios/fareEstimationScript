@@ -38,7 +38,7 @@ func Estimator(input string, output string) error {
 		stringEstimation := []string{rideEstimation.IDRide, fmt.Sprintf("%.2f", rideEstimation.Total)}
 		fareEstimation = append(fareEstimation, stringEstimation)
 	}
-	// write the data at  desired file
+	// write the data at desired file
 	err = csv.WriteToFile(output, fareEstimation)
 	if err != nil {
 		return fmt.Errorf("error writing to file: %s", err)
@@ -48,6 +48,7 @@ func Estimator(input string, output string) error {
 }
 
 func prepare() (string, string) {
+	// prints a usage message documenting all defined command-line flags
 	flag.Usage = func() {
 		fmt.Printf(" Fare Ride Calculation Script\n")
 		fmt.Printf(" Please read bellow how to use the script , and how to use the arguments\n\n")

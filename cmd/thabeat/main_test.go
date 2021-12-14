@@ -17,7 +17,7 @@ func TestPrepare(t *testing.T) {
 		os.Args = row.arguments
 		input, output := prepare()
 		if input != row.expected[0] && output != row.expected[1] {
-			t.Errorf("[TestPrepare] Failed: expected input |output :%v | %v  to be equal with %v | %v, ", input, output, row.expected[0], row.expected[1])
+			t.Errorf("[TestPrepare] Failed: expected input | output :%v | %v  to be equal with %v | %v, ", input, output, row.expected[0], row.expected[1])
 		}
 	}
 }
