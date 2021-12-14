@@ -24,53 +24,56 @@ const (
 )
 
 // CalculateFare gets as parameter Ride objects and for each of them a fare is calculated
-func CalculateFare(ride ride.Ride) *FareRide {
+func CalculateFare(r ride.Ride) FareRide {
 
-	total := flagRate
-	for i := 0; i < len(ride.Points)-1; i++ {
-		for j := i + 1; j < len(ride.Points); j++ {
+	fare := FareRide{
+		IDRide: r.ID,
+		Total:  flagRate,
+	}
+	if len(r.Points) == 0 {
+		return fare
+	}
+	// First point is the start point
+	startPoint := r.Points[0]
+	// We start iterating from second point
+	for i := 1; i < len(r.Points); i++ {
 
-			startPoint := ride.Points[i]
-			endPoint := ride.Points[j]
+		endPoint := r.Points[i]
+		origin := haversine.Point{Lat: startPoint.Latitude, Lon: startPoint.Longitude}
+		position := haversine.Point{Lat: endPoint.Latitude, Lon: endPoint.Longitude}
 
-			origin := haversine.Point{Lat: startPoint.Latitude, Lon: startPoint.Longitude}
-			position := haversine.Point{Lat: endPoint.Latitude, Lon: endPoint.Longitude}
+		//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
+		deltaTimeSeconds := float64(endPoint.Timestamp - startPoint.Timestamp)
+		//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
+		deltaDistanceKm := haversine.Distance(origin, position)
+		// calculate the segment’s speed in khm
+		speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
 
-			//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
-			deltaTimeSeconds := float64(endPoint.Timestamp - startPoint.Timestamp)
-			//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
-			deltaDistanceKm := haversine.Distance(origin, position)
-			// calculate the segment’s speed in khm
-			speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
-
-			//if speed is > 100km/h remove the second element from the set
-			if speed > maxSpeed {
-				i++
-				// skip the corrupted point
-				continue
-			}
-
-			// calculate idle rate
-			if speed <= minSpeed {
-				total += (deltaTimeSeconds / 3600) * idleHourRate
-				break
-			}
-
-			// calculate distance rate by hour
-			if isDayRide(startPoint.Timestamp) {
-				total += deltaDistanceKm * movingRateDayShift
-			} else {
-				total += deltaDistanceKm * movingRateNightShift
-			}
-			break
+		//if speed is > 100km/h remove the second element from the set
+		if speed > maxSpeed {
+			// skip the corrupted point
+			continue
 		}
+
+		// calculate idle rate
+		if speed <= minSpeed {
+			fare.Total += (deltaTimeSeconds / 3600) * idleHourRate
+			startPoint = endPoint
+			continue
+		}
+
+		// calculate distance rate by hour
+		if isDayRide(startPoint.Timestamp) {
+			fare.Total += deltaDistanceKm * movingRateDayShift
+		} else {
+			fare.Total += deltaDistanceKm * movingRateNightShift
+		}
+		startPoint = endPoint
 	}
 	// select  the greatest
-	total = math.Max(total, minTotal)
-	return &FareRide{
-		IDRide: ride.ID,
-		Total:  total,
-	}
+	fare.Total = math.Max(fare.Total, minTotal)
+
+	return fare
 }
 
 //calculate if the given timestamp is at day/night sift

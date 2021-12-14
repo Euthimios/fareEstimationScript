@@ -88,7 +88,7 @@ go test ./...
 ```bash
 
 Usage:
-  go run cmd/thabeat/main.go  -in="inpath" -out="outpath"
+  go run .cmd/thabeat/main.go  -in="inpath" -out="outpath"
 
 
 Flags:
