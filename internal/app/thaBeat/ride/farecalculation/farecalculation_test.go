@@ -32,7 +32,7 @@ var estimateResults = []struct {
 }{{ride.Ride{ID: "1", Points: []ride.Point{}}, FareRide{IDRide: "1", Total: 1.3}},
 	{ride.Ride{ID: "2", Points: []ride.Point{{38.018001, 23.730222, 1405591942}, {38.018001, 23.730222, 1405591952}}}, FareRide{IDRide: "2", Total: 3.47}},
 	{ride.Ride{ID: "123", Points: []ride.Point{{38.018011, 23.730212, 1638690233}, {38.018011, 23.730212, 1638690243}}}, FareRide{IDRide: "123", Total: 3.47}},
-	{ride.Ride{ID: "1243", Points: []ride.Point{{38.019576, 23.735345, 1639442756}, {38.019562, 23.736212, 1639443476}}}, FareRide{IDRide: "1243", Total: 3.47}},
+	{ride.Ride{ID: "1243", Points: []ride.Point{{38.019576, 23.735345, 1639442756}, {38.019562, 23.736212, 1639443476}}}, FareRide{IDRide: "1243", Total: 3.6800000000000006}},
 	{ride.Ride{ID: "1235", Points: []ride.Point{{38.019576, 23.735355, 1638704950}, {38.019562, 23.735345, 1638705853}}}, FareRide{IDRide: "1235", Total: 4.284916666666667}},
 	{ride.Ride{ID: "12356", Points: []ride.Point{{38.019576, 23.735355, 1639442753}, {38.019562, 23.735345, 1639443593}}}, FareRide{IDRide: "12356", Total: 4.076666666666667}},
 	{ride.Ride{ID: "1234", Points: []ride.Point{{38.019576, 23.735345, 1639357217}, {38.019562, 23.735345, 1639357700}, {38.019562, 23.735345, 1638692835}, {38.019567, 23.735437, 1638692900}}}, FareRide{IDRide: "1234", Total: 3.47}},

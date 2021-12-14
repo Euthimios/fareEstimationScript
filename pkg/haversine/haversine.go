@@ -35,7 +35,7 @@ func degreesToRadians(degrees float64) float64 {
 }
 
 // Distance will calculate the spherical distance as the
-// crow flies between lat and lon for two given points by the Haverstine formula
+// crow flies between lat and lon for two given points by the Haverstine formula in khm
 func Distance(origin, position Point) float64 {
 	origin = origin.toRadians()
 	position = position.toRadians()
@@ -45,5 +45,5 @@ func Distance(origin, position Point) float64 {
 	a := math.Pow(math.Sin(change.Lat/2), 2) + math.Cos(origin.Lat)*math.Cos(position.Lat)*math.Pow(math.Sin(change.Lon/2), 2)
 
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-	return earthRadiusMetres * c
+	return (earthRadiusMetres * c) / 1000
 }
