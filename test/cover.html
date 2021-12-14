@@ -57,13 +57,13 @@
 				
 				<option value="file0">thaBeat/cmd/thabeat/main.go (65.4%)</option>
 				
-				<option value="file1">thaBeat/csv/csv.go (89.7%)</option>
+				<option value="file1">thaBeat/internal/app/thaBeat/ride/farecalculation/farecalculation.go (100.0%)</option>
 				
-				<option value="file2">thaBeat/internal/app/thaBeat/haversine/haversine.go (100.0%)</option>
+				<option value="file2">thaBeat/internal/app/thaBeat/ride/parser/parser.go (100.0%)</option>
 				
-				<option value="file3">thaBeat/internal/app/thaBeat/ride/farecalculation/farecalculation.go (100.0%)</option>
+				<option value="file3">thaBeat/pkg/csv/csv.go (89.7%)</option>
 				
-				<option value="file4">thaBeat/internal/app/thaBeat/ride/parser/parser.go (100.0%)</option>
+				<option value="file4">thaBeat/pkg/haversine/haversine.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -82,14 +82,14 @@
 import (
         "flag"
         "fmt"
-        "thaBeat/csv"
         "thaBeat/internal/app/thaBeat/ride/farecalculation"
         "thaBeat/internal/app/thaBeat/ride/parser"
+        "thaBeat/pkg/csv"
 )
 
 const (
-        inputFile  = "resources/input.csv"
-        outputFile = "resources/output.csv"
+        inputFile  = "assets/input.csv"
+        outputFile = "assets/output.csv"
 )
 
 func main() <span class="cov0" title="0">{
@@ -140,127 +140,12 @@ func prepare() (string, string) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package csv
-
-import (
-        "bufio"
-        "encoding/csv"
-        "fmt"
-        "os"
-        "path/filepath"
-)
-
-// ReadFromFile gets a file path as parameter, opens a csv file, reads it
-func ReadFromFile(path string) ([][]string, error) <span class="cov8" title="1">{
-
-        fullPath, err := filepath.Abs(path)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
-        }</span>
-
-        <span class="cov8" title="1">file, err := os.Open(fullPath)
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("Failed to open file: %v; err: %v ", fullPath, err)
-        }</span>
-
-        <span class="cov8" title="1">reader := csv.NewReader(bufio.NewReader(file))
-        data, err := reader.ReadAll()
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("Malformed data to  file: %v; err: %v ", fullPath, err)
-        }</span>
-        <span class="cov8" title="1">return data, nil</span>
-}
-
-// WriteToFile gets a file name  and writes them in a file
-func WriteToFile(path string, input [][]string) error <span class="cov8" title="1">{
-        fullPath, err := filepath.Abs(path)
-        if err != nil </span><span class="cov0" title="0">{
-                return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
-        }</span>
-
-        <span class="cov8" title="1">dirPath := filepath.Dir(fullPath)
-        err = os.MkdirAll(dirPath, os.ModePerm)
-        if err != nil </span><span class="cov8" title="1">{
-                return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
-        }</span>
-
-        <span class="cov8" title="1">file, err := os.Create(fullPath)
-        if err != nil </span><span class="cov8" title="1">{
-                return fmt.Errorf("cannot create file; err: %v", err)
-        }</span>
-
-        <span class="cov8" title="1">writer := csv.NewWriter(file)
-
-        for row := range input </span><span class="cov8" title="1">{
-                err := writer.Write(input[row])
-                if err != nil </span><span class="cov0" title="0">{
-                        return fmt.Errorf("cannot write row in file; err: %v", err)
-                }</span>
-        }
-
-        <span class="cov8" title="1">writer.Flush()
-        file.Close()
-        return nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file2" style="display: none">package haversine
+		<pre class="file" id="file1" style="display: none">package farecalculation
 
 import (
         "math"
-)
-
-var earthRadiusMetres float64 = 6371000
-
-type Point struct {
-        Lat float64
-        Lon float64
-}
-
-type Delta struct {
-        Lat float64
-        Lon float64
-}
-
-func (p Point) Delta(point Point) Delta <span class="cov8" title="1">{
-        return Delta{
-                Lat: p.Lat - point.Lat,
-                Lon: p.Lon - point.Lon,
-        }
-}</span>
-
-func (p Point) toRadians() Point <span class="cov8" title="1">{
-        return Point{
-                Lat: degreesToRadians(p.Lat),
-                Lon: degreesToRadians(p.Lon),
-        }
-}</span>
-
-func degreesToRadians(degrees float64) float64 <span class="cov8" title="1">{
-        return degrees * math.Pi / 180
-}</span>
-
-// Distance will calculate the spherical distance as the
-// crow flies between lat and lon for two given points by the Haverstine formula
-func Distance(origin, position Point) float64 <span class="cov8" title="1">{
-        origin = origin.toRadians()
-        position = position.toRadians()
-
-        change := origin.Delta(position)
-
-        a := math.Pow(math.Sin(change.Lat/2), 2) + math.Cos(origin.Lat)*math.Cos(position.Lat)*math.Pow(math.Sin(change.Lon/2), 2)
-
-        c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-        return earthRadiusMetres * c
-}</span>
-</pre>
-		
-		<pre class="file" id="file3" style="display: none">package farecalculation
-
-import (
-        "math"
-        "thaBeat/internal/app/thaBeat/haversine"
         "thaBeat/internal/app/thaBeat/ride"
+        "thaBeat/pkg/haversine"
         "time"
 )
 
@@ -345,7 +230,7 @@ func isDayRide(timestamp int32) bool <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package parser
+		<pre class="file" id="file2" style="display: none">package parser
 
 import (
         "fmt"
@@ -415,6 +300,121 @@ func parseRow(row []string) (string, *ride.Point, error) <span class="cov8" titl
                 Timestamp: int32(timestamp),
         }, nil</span>
 }
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package csv
+
+import (
+        "bufio"
+        "encoding/csv"
+        "fmt"
+        "os"
+        "path/filepath"
+)
+
+// ReadFromFile gets a file path as parameter, opens a csv file, reads it
+func ReadFromFile(path string) ([][]string, error) <span class="cov8" title="1">{
+
+        fullPath, err := filepath.Abs(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
+        }</span>
+
+        <span class="cov8" title="1">file, err := os.Open(fullPath)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("Failed to open file: %v; err: %v ", fullPath, err)
+        }</span>
+
+        <span class="cov8" title="1">reader := csv.NewReader(bufio.NewReader(file))
+        data, err := reader.ReadAll()
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("Malformed data to  file: %v; err: %v ", fullPath, err)
+        }</span>
+        <span class="cov8" title="1">return data, nil</span>
+}
+
+// WriteToFile gets a file name  and writes them in a file
+func WriteToFile(path string, input [][]string) error <span class="cov8" title="1">{
+        fullPath, err := filepath.Abs(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
+        }</span>
+
+        <span class="cov8" title="1">dirPath := filepath.Dir(fullPath)
+        err = os.MkdirAll(dirPath, os.ModePerm)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
+        }</span>
+
+        <span class="cov8" title="1">file, err := os.Create(fullPath)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("cannot create file; err: %v", err)
+        }</span>
+
+        <span class="cov8" title="1">writer := csv.NewWriter(file)
+
+        for row := range input </span><span class="cov8" title="1">{
+                err := writer.Write(input[row])
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("cannot write row in file; err: %v", err)
+                }</span>
+        }
+
+        <span class="cov8" title="1">writer.Flush()
+        file.Close()
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package haversine
+
+import (
+        "math"
+)
+
+var earthRadiusMetres float64 = 6371000
+
+type Point struct {
+        Lat float64
+        Lon float64
+}
+
+type Delta struct {
+        Lat float64
+        Lon float64
+}
+
+func (p Point) Delta(point Point) Delta <span class="cov8" title="1">{
+        return Delta{
+                Lat: p.Lat - point.Lat,
+                Lon: p.Lon - point.Lon,
+        }
+}</span>
+
+func (p Point) toRadians() Point <span class="cov8" title="1">{
+        return Point{
+                Lat: degreesToRadians(p.Lat),
+                Lon: degreesToRadians(p.Lon),
+        }
+}</span>
+
+func degreesToRadians(degrees float64) float64 <span class="cov8" title="1">{
+        return degrees * math.Pi / 180
+}</span>
+
+// Distance will calculate the spherical distance as the
+// crow flies between lat and lon for two given points by the Haverstine formula
+func Distance(origin, position Point) float64 <span class="cov8" title="1">{
+        origin = origin.toRadians()
+        position = position.toRadians()
+
+        change := origin.Delta(position)
+
+        a := math.Pow(math.Sin(change.Lat/2), 2) + math.Cos(origin.Lat)*math.Cos(position.Lat)*math.Pow(math.Sin(change.Lon/2), 2)
+
+        c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+        return earthRadiusMetres * c
+}</span>
 </pre>
 		
 		</div>

@@ -30,20 +30,15 @@ longitudes and latitudes.You can learn more about Haversine [here](https://en.wi
 ### Layout
 
 ```tree
-├── README.md
+├── assets
 ├── cmd
 │   └── thabeat
 │       ├── main.go
 │       └── main_test.go
-├── csv
-│   ├── csv.qo
-│   └── csv_test.go
 ├── internal
 │   └── app
 │      └── thabeat
-│          ├── haversine
-│          │    ├── haversine.go
-│          │    └── haversine_test.go
+│          │
 │          └── ride
 │                ├── farecalculation
 │                │   ├── farecalculation.go
@@ -52,22 +47,26 @@ longitudes and latitudes.You can learn more about Haversine [here](https://en.wi
 │                │   ├── parser.go
 │                │   └── parser_test.go
 │                └── ride.go
-├──resources
-│
-└── test
-    └── testdata
-
+├── pkg
+│   ├── csv
+│   │    ├── csv.qo
+│   │    └── csv_test.go
+│   └── haversine
+│       ├── haversine.go
+│       └── haversine_test.go
+├── test
+│    └── testdata
+└── README.md
 
 ```
 A brief description of the layout:
 
-* `README.md` is a detailed description of the project.
+* `assets` contains the default input / output files.
 * `cmd` contains main packages with it's unit test file.
-* `csv` contains code for the read / write actions of the CSV Files with it's unit test file.
 * `internal` application and library code with it's unit test files.
-* `resources` contains the default input / output files.
+* `pkg` contains code that's ok to use by external application.
 * `test` holds all tests data.
-
+* `README.md` is a detailed description of the project.
 
 ## Tests
 
@@ -92,6 +91,6 @@ Usage:
 
 
 Flags:
-      in   the path for the file that has the Ride data ,ex : resources/input.csv
-      out  the path for the file that will have the calculated data for each Ride , ex :resources/output.csv
+      in   the path for the file that has the Ride data ,ex : assets/input.csv
+      out  the path for the file that will have the calculated data for each Ride , ex :assets/output.csv
 ```

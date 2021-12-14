@@ -16,11 +16,11 @@ var testRead = []struct {
 }{
 	{name: "wrong file path", expected: [][]string{}, filePath: "wrong file path"},
 	{name: "wrong file path", expected: [][]string{}, filePath: "test/testdata/minorset.csv"},
-	{name: "malformed data csv", expected: [][]string{}, filePath: "../test/testdata/malformed.csv"},
+	{name: "malformed data csv", expected: [][]string{}, filePath: "../../test/testdata/malformed.csv"},
 	{name: "Correct file path", expected: [][]string{0: {0: "123", 1: "38.019564", 2: "23.735323", 3: "1405592132"},
 		1: {0: "123", 1: "38.019562", 2: "23.735345", 3: "1405592142"},
 		2: {0: "123", 1: "38.019562", 2: "23.735345", 3: "1405592152"}},
-		filePath: "../test/testdata/minorset.csv",
+		filePath: "../../test/testdata/minorset.csv",
 	},
 }
 
@@ -51,15 +51,15 @@ var testWrite = []struct {
 			1: {0: "1234", 1: "8.41"},
 			2: {0: "12345", 1: "56.60"},
 		},
-		filePath: "../test/testdata/output.csv",
+		filePath: "../../test/testdata/output.csv",
 	},
 }
 
 func TestWriteToFile(t *testing.T) {
 	for _, row := range testWrite {
 		err := WriteToFile(row.filePath, row.inputData)
-		if err == nil && !fileComparison(row.filePath, "../test/testdata/expectedresult.csv") {
-			t.Errorf("[TestWriteToFile] Failed %v: expected file %v and %v to be equal", row.name, err, "../test/testdata/expectedresult.csv")
+		if err == nil && !fileComparison(row.filePath, "../../test/testdata/expectedresult.csv") {
+			t.Errorf("[TestWriteToFile] Failed %v: expected file %v and %v to be equal", row.name, err, "../../test/testdata/expectedresult.csv")
 		}
 	}
 }

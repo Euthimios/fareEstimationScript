@@ -28,8 +28,8 @@ var testMain = []struct {
 	outPath string
 }{
 	{name: "wrong file path", inPath: "test/testdata/minorset.csv", outPath: ""},
-	{name: "malformed data csv", inPath: "../test/testdata/malformed.csv", outPath: "/terst/±±±!!@@!!/!!!!@@@/##@@"},
-	{name: "Correct file path", inPath: "../../test/testdata/minorset.csv", outPath: "../../thabeat/test/testdata/output.csv"},
+	{name: "malformed data csv", inPath: "../../test/testdata/malformed.csv", outPath: "/terst/±±±!!@@!!/!!!!@@@/##@@"},
+	{name: "Correct file path", inPath: "../../test/testdata/minorset.csv", outPath: "../../test/testdata/output.csv"},
 }
 
 func TestEstimator(t *testing.T) {

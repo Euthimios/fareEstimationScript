@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"thaBeat/csv"
 	"thaBeat/internal/app/thaBeat/ride/farecalculation"
 	"thaBeat/internal/app/thaBeat/ride/parser"
+	"thaBeat/pkg/csv"
 )
 
 const (
-	inputFile  = "resources/input.csv"
-	outputFile = "resources/output.csv"
+	inputFile  = "assets/input.csv"
+	outputFile = "assets/output.csv"
 )
 
 func main() {

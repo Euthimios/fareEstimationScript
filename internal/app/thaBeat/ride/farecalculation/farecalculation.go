@@ -2,8 +2,8 @@ package farecalculation
 
 import (
 	"math"
-	"thaBeat/internal/app/thaBeat/haversine"
 	"thaBeat/internal/app/thaBeat/ride"
+	"thaBeat/pkg/haversine"
 	"time"
 )
 
