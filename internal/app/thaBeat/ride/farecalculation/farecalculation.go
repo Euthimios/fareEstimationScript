@@ -1,6 +1,7 @@
 package farecalculation
 
 import (
+	"fmt"
 	"math"
 	"thaBeat/internal/app/thaBeat/ride"
 	"thaBeat/pkg/haversine"
@@ -24,56 +25,64 @@ const (
 )
 
 // CalculateFare gets as parameter Ride objects and for each of them a fare is calculated
-func CalculateFare(r ride.Ride) FareRide {
+func CalculateFare(inputCh <-chan ride.Ride) <-chan []string {
 
-	fare := FareRide{
-		IDRide: r.ID,
-		Total:  flagRate,
-	}
-	if len(r.Points) == 0 {
-		return fare
-	}
-	// First point is the start point
-	startPoint := r.Points[0]
-	// We start iterating from second point
-	for i := 1; i < len(r.Points); i++ {
+	outputChan := make(chan []string)
+	go func() {
+		for r := range inputCh {
+			fare := FareRide{
+				IDRide: r.ID,
+				Total:  flagRate,
+			}
+			if len(r.Points) == 0 {
+				outputChan <- []string{fare.IDRide, fmt.Sprintf("%.2f", fare.Total)}
+			}
+			// First point is the start point
+			startPoint := r.Points[0]
+			// We start iterating from second point
+			for i := 1; i < len(r.Points); i++ {
 
-		endPoint := r.Points[i]
-		origin := haversine.Point{Lat: startPoint.Latitude, Lon: startPoint.Longitude}
-		position := haversine.Point{Lat: endPoint.Latitude, Lon: endPoint.Longitude}
+				endPoint := r.Points[i]
+				origin := haversine.Point{Lat: startPoint.Latitude, Lon: startPoint.Longitude}
+				position := haversine.Point{Lat: endPoint.Latitude, Lon: endPoint.Longitude}
 
-		//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
-		deltaTimeSeconds := float64(endPoint.Timestamp - startPoint.Timestamp)
-		//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
-		deltaDistanceKm := haversine.Distance(origin, position)
-		// calculate the segment’s speed in khm
-		speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
+				//the elapsed time Δt as the absolute difference of the segment endpoint timestamps
+				deltaTimeSeconds := float64(endPoint.Timestamp - startPoint.Timestamp)
+				//the distance covered Δs as the Haversine distance of the segment endpoint coordinates.
+				deltaDistanceKm := haversine.Distance(origin, position)
+				// calculate the segment’s speed in khm
+				speed := (deltaDistanceKm / deltaTimeSeconds) * 3600
 
-		//if speed is > 100km/h remove the second element from the set
-		if speed > maxSpeed {
-			// skip the corrupted point
-			continue
+				//if speed is > 100km/h remove the second element from the set
+				if speed > maxSpeed {
+					// skip the corrupted point
+					continue
+				}
+
+				// calculate idle rate
+				if speed <= minSpeed {
+					fare.Total += (deltaTimeSeconds / 3600) * idleHourRate
+					startPoint = endPoint
+					continue
+				}
+
+				// calculate distance rate by hour
+				if isDayRide(startPoint.Timestamp) {
+					fare.Total += deltaDistanceKm * movingRateDayShift
+				} else {
+					fare.Total += deltaDistanceKm * movingRateNightShift
+				}
+				startPoint = endPoint
+			}
+			// select  the greatest
+			fare.Total = math.Max(fare.Total, minTotal)
+			stringEstimation := []string{fare.IDRide, fmt.Sprintf("%.2f", fare.Total)}
+
+			outputChan <- stringEstimation
 		}
-
-		// calculate idle rate
-		if speed <= minSpeed {
-			fare.Total += (deltaTimeSeconds / 3600) * idleHourRate
-			startPoint = endPoint
-			continue
-		}
-
-		// calculate distance rate by hour
-		if isDayRide(startPoint.Timestamp) {
-			fare.Total += deltaDistanceKm * movingRateDayShift
-		} else {
-			fare.Total += deltaDistanceKm * movingRateNightShift
-		}
-		startPoint = endPoint
-	}
-	// select  the greatest
-	fare.Total = math.Max(fare.Total, minTotal)
-
-	return fare
+		close(outputChan)
+	}()
+	return outputChan
 }
 
 //calculate if the given timestamp is at day/night sift

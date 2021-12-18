@@ -16,15 +16,15 @@ const (
 func main() {
 
 	input, output := prepare()
-	err := Estimator(input, output)
+	err := estimator(input, output)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("complete")
 }
 
-func Estimator(input string, output string) error {
-	var fareEstimation [][]string
+func estimator(input string, output string) error {
+	//var fareEstimation [][]string
 	// read from file
 	read, err := csv.ReadFromFile(input)
 	if err != nil {
@@ -33,17 +33,20 @@ func Estimator(input string, output string) error {
 	// parse the data  from the file into a Ride structure
 	rides := parser.ParseData(read)
 	// for each Ride proceed with fare calculation
-	for _, ride := range rides {
-		rideEstimation := farecalculation.CalculateFare(ride)
-		stringEstimation := []string{rideEstimation.IDRide, fmt.Sprintf("%.2f", rideEstimation.Total)}
-		fareEstimation = append(fareEstimation, stringEstimation)
-	}
-	// write the data at desired file
-	err = csv.WriteToFile(output, fareEstimation)
+	rideEstimation := farecalculation.CalculateFare(rides)
+	done, errCh, err := csv.WriteToFile(output, rideEstimation)
+
 	if err != nil {
-		return fmt.Errorf("error writing to file: %s", err)
+		return fmt.Errorf("error during file write , err: %v", err)
 	}
 
+	select {
+	case err := <-errCh:
+		if err != nil {
+			return fmt.Errorf("error : %v", err)
+		}
+	case <-done:
+	}
 	return nil
 }
 

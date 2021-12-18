@@ -30,36 +30,43 @@ func ReadFromFile(path string) ([][]string, error) {
 }
 
 // WriteToFile gets a file name  and writes them in a file
-func WriteToFile(path string, input [][]string) error {
+func WriteToFile(path string, input <-chan []string) (chan int, chan error, error) {
 	// absolute representation of the specified path
 	fullPath, err := filepath.Abs(path)
 	if err != nil {
-		return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
+		return nil, nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
 	}
 
 	dirPath := filepath.Dir(fullPath)
 	// create path
 	err = os.MkdirAll(dirPath, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
+		return nil, nil, fmt.Errorf("Could not create path: %v; err: %v ", path, err)
 	}
 	// create file
 	file, err := os.Create(fullPath)
 	if err != nil {
-		return fmt.Errorf("cannot create file; err: %v", err)
+		return nil, nil, fmt.Errorf("cannot create file; err: %v", err)
 	}
 	// create a new writer
 	writer := csv.NewWriter(file)
 
-	for row := range input {
-		// write to csv
-		err := writer.Write(input[row])
-		if err != nil {
-			return fmt.Errorf("cannot write row in file; err: %v", err)
-		}
-	}
+	done := make(chan int)
+	errCh := make(chan error)
 
-	writer.Flush()
-	file.Close()
-	return nil
+	go func() {
+		for raw := range input {
+			// write to csv
+			err := writer.Write(raw)
+			fmt.Println(input)
+			if err != nil {
+				errCh <- fmt.Errorf("cannot write row in file; err: %v", err)
+			}
+		}
+		writer.Flush()
+		file.Close()
+		done <- 0
+	}()
+
+	return done, nil, nil
 }
