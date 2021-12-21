@@ -15,7 +15,6 @@ func ParseData(input [][]string) <-chan ride.Ride {
 		var id string
 
 		for row := range input {
-
 			// parse every row in order to get the id and the locations
 			currentID, currentLocation, err := parseRow(input[row])
 			//check for errors during the parsing

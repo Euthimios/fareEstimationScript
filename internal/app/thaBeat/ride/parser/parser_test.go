@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 	"thaBeat/internal/app/thaBeat/ride"
@@ -31,8 +32,13 @@ var positions = []struct {
 func TestParseData(t *testing.T) {
 	for _, pos := range positions {
 		result := ParseData(pos.testData)
-		if !reflect.DeepEqual(result, pos.expectedData) {
-			t.Errorf("[TestParseData] Failed: unexpected position data, expected :%v  , got %v, ", pos.expectedData, result)
+		for raw := range result {
+			fmt.Println(raw)
+			contain := contains(raw.ID, pos.expectedData)
+			if contain != -1 && !reflect.DeepEqual(raw, pos.expectedData[contain]) {
+				t.Errorf("[TestParseData] Failed: unexpected position data, expected :%v  , got %v, ", pos.expectedData, raw)
+			}
+
 		}
 	}
 }
@@ -66,4 +72,15 @@ func TestParseRow(t *testing.T) {
 			t.Errorf(" [TestParseRow] Failed : Parsing Failed, expect : %v, and  get : %v", test.expectedID, id)
 		}
 	}
+}
+
+// method to check if value exists into the slice
+//only for testing purpose
+func contains(value string, r []ride.Ride) int {
+	for a := range r {
+		if r[a].ID == value {
+			return a
+		}
+	}
+	return -1
 }

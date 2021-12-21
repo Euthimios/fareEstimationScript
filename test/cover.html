@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>thabeat: Go Coverage Report</title>
+		<title>farecalculation: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,15 +55,11 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">thaBeat/cmd/thabeat/main.go (65.4%)</option>
+				<option value="file0">thaBeat/internal/app/thaBeat/ride/farecalculation/farecalculation.go (97.1%)</option>
 				
-				<option value="file1">thaBeat/internal/app/thaBeat/ride/farecalculation/farecalculation.go (100.0%)</option>
+				<option value="file1">thaBeat/internal/app/thaBeat/ride/parser/parser.go (100.0%)</option>
 				
-				<option value="file2">thaBeat/internal/app/thaBeat/ride/parser/parser.go (100.0%)</option>
-				
-				<option value="file3">thaBeat/pkg/csv/csv.go (89.7%)</option>
-				
-				<option value="file4">thaBeat/pkg/haversine/haversine.go (100.0%)</option>
+				<option value="file2">thaBeat/pkg/haversine/haversine.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -77,72 +73,10 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package main
+		<pre class="file" id="file0" style="display: none">package farecalculation
 
 import (
-        "flag"
         "fmt"
-        "thaBeat/internal/app/thaBeat/ride/farecalculation"
-        "thaBeat/internal/app/thaBeat/ride/parser"
-        "thaBeat/pkg/csv"
-)
-
-const (
-        inputFile  = "assets/input.csv"
-        outputFile = "assets/output.csv"
-)
-
-func main() <span class="cov0" title="0">{
-
-        input, output := prepare()
-        err := Estimator(input, output)
-        if err != nil </span><span class="cov0" title="0">{
-                panic(err)</span>
-        }
-        <span class="cov0" title="0">fmt.Println("complete")</span>
-}
-
-func Estimator(input string, output string) error <span class="cov8" title="1">{
-        var fareEstimation [][]string
-        // read from file
-        read, err := csv.ReadFromFile(input)
-        if err != nil </span><span class="cov8" title="1">{
-                return fmt.Errorf("failed to open and/or read the file : %v", err)
-        }</span>
-        // parse the data  from the file into a Ride structure
-        <span class="cov8" title="1">rides := parser.ParseData(read)
-        // for each Ride proceed with fare calculation
-        for _, ride := range rides </span><span class="cov8" title="1">{
-                rideEstimation := farecalculation.CalculateFare(ride)
-                stringEstimation := []string{rideEstimation.IDRide, fmt.Sprintf("%.2f", rideEstimation.Total)}
-                fareEstimation = append(fareEstimation, stringEstimation)
-        }</span>
-        // write the data at  desired file
-        <span class="cov8" title="1">err = csv.WriteToFile(output, fareEstimation)
-        if err != nil </span><span class="cov0" title="0">{
-                return fmt.Errorf("error writing to file: %s", err)
-        }</span>
-
-        <span class="cov8" title="1">return nil</span>
-}
-
-func prepare() (string, string) <span class="cov8" title="1">{
-        flag.Usage = func() </span><span class="cov0" title="0">{
-                fmt.Printf(" Fare Ride Calculation Script\n")
-                fmt.Printf(" Please read bellow how to use the script , and how to use the arguments\n\n")
-                flag.PrintDefaults()
-        }</span>
-
-        <span class="cov8" title="1">input := flag.String("in", inputFile, "please enter the path for the file that has the Ride data")
-        output := flag.String("out", outputFile, "please enter the path for the file that will have the calculated data for each Ride")
-        flag.Parse()
-        return *input, *output</span>
-}
-</pre>
-		
-		<pre class="file" id="file1" style="display: none">package farecalculation
-
-import (
         "math"
         "thaBeat/internal/app/thaBeat/ride"
         "thaBeat/pkg/haversine"
@@ -166,8 +100,20 @@ const (
 )
 
 // CalculateFare gets as parameter Ride objects and for each of them a fare is calculated
-func CalculateFare(r ride.Ride) FareRide <span class="cov8" title="1">{
+func CalculateFare(inputCh &lt;-chan ride.Ride) &lt;-chan []string <span class="cov8" title="1">{
 
+        outputChan := make(chan []string)
+        go func() </span><span class="cov8" title="1">{
+                for r := range inputCh </span><span class="cov8" title="1">{
+                        fare := performFareCalculation(r)
+                        outputChan &lt;- []string{fare.IDRide, fmt.Sprintf("%.2f", fare.Total)}
+                }</span>
+                <span class="cov0" title="0">close(outputChan)</span>
+        }()
+        <span class="cov8" title="1">return outputChan</span>
+}
+
+func performFareCalculation(r ride.Ride) FareRide <span class="cov8" title="1">{
         fare := FareRide{
                 IDRide: r.ID,
                 Total:  flagRate,
@@ -214,8 +160,8 @@ func CalculateFare(r ride.Ride) FareRide <span class="cov8" title="1">{
         }
         // select  the greatest
         <span class="cov8" title="1">fare.Total = math.Max(fare.Total, minTotal)
-
         return fare</span>
+
 }
 
 //calculate if the given timestamp is at day/night sift
@@ -230,7 +176,7 @@ func isDayRide(timestamp int32) bool <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package parser
+		<pre class="file" id="file1" style="display: none">package parser
 
 import (
         "fmt"
@@ -239,43 +185,44 @@ import (
 )
 
 // ParseData gets as parameter string arrays and for each of them a Ride struct is generated
-func ParseData(input [][]string) []ride.Ride <span class="cov8" title="1">{
+func ParseData(input [][]string) &lt;-chan ride.Ride <span class="cov8" title="1">{
+        dataChan := make(chan ride.Ride)
 
-        var locations []ride.Point
-        var rides []ride.Ride
-        var id string
+        go func() </span><span class="cov8" title="1">{
+                var locations []ride.Point
+                var id string
 
-        for row := range input </span><span class="cov8" title="1">{
-
-                // parse every row in order to get the id and the locations
-                currentID, currentLocation, err := parseRow(input[row])
-                //check for errors during the parsing
-                if err != nil </span><span class="cov8" title="1">{
-                        fmt.Printf("wrong data sended to parser; error: %v", err)
-                        continue</span>
-                }
-                // in case the file contains data for different id_rides
-                <span class="cov8" title="1">if len(locations) != 0 &amp;&amp; id != currentID </span><span class="cov8" title="1">{
-                        r := ride.Ride{
-                                ID:     id,
-                                Points: locations,
+                for row := range input </span><span class="cov8" title="1">{
+                        // parse every row in order to get the id and the locations
+                        currentID, currentLocation, err := parseRow(input[row])
+                        //check for errors during the parsing
+                        if err != nil </span><span class="cov8" title="1">{
+                                fmt.Printf("wrong data sended to parser; error: %v", err)
+                                continue</span>
                         }
-                        // append the data at ride
-                        rides = append(rides, r)
-                        // empty the locations in order to add the
-                        // new data from the new id_ride
-                        locations = []ride.Point{}
-                }</span>
-                <span class="cov8" title="1">id = currentID
-                locations = append(locations, *currentLocation)</span>
-        }
-        //for the last ride_id ,or in case thee file contains points for only one ride
-        <span class="cov8" title="1">r := ride.Ride{
-                ID:     id,
-                Points: locations,
-        }
-        rides = append(rides, r)
-        return rides</span>
+                        // in case the file contains data for different id_rides
+                        <span class="cov8" title="1">if len(locations) != 0 &amp;&amp; id != currentID </span><span class="cov8" title="1">{
+                                r := ride.Ride{
+                                        ID:     id,
+                                        Points: locations,
+                                }
+                                // append the data at ride
+                                dataChan &lt;- r
+                                // empty the locations in order to add the new data from the new id_ride
+                                locations = []ride.Point{}
+                        }</span>
+                        <span class="cov8" title="1">id = currentID
+                        locations = append(locations, *currentLocation)</span>
+                }
+                //for the last ride_id ,or in case thee file contains points for only one ride
+                <span class="cov8" title="1">r := ride.Ride{
+                        ID:     id,
+                        Points: locations,
+                }
+                dataChan &lt;- r
+                close(dataChan)</span>
+        }()
+        <span class="cov8" title="1">return dataChan</span>
 }
 
 // parseRow parse each row into a ride.Point struct
@@ -302,74 +249,7 @@ func parseRow(row []string) (string, *ride.Point, error) <span class="cov8" titl
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package csv
-
-import (
-        "bufio"
-        "encoding/csv"
-        "fmt"
-        "os"
-        "path/filepath"
-)
-
-// ReadFromFile gets a file path as parameter, opens a csv file, reads it
-func ReadFromFile(path string) ([][]string, error) <span class="cov8" title="1">{
-        // absolute representation of the specified path
-        fullPath, err := filepath.Abs(path)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
-        }</span>
-        //open the file
-        <span class="cov8" title="1">file, err := os.Open(fullPath)
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("Failed to open file: %v; err: %v ", fullPath, err)
-        }</span>
-        // read the file
-        <span class="cov8" title="1">reader := csv.NewReader(bufio.NewReader(file))
-        data, err := reader.ReadAll()
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("Malformed data to  file: %v; err: %v ", fullPath, err)
-        }</span>
-        <span class="cov8" title="1">return data, nil</span>
-}
-
-// WriteToFile gets a file name  and writes them in a file
-func WriteToFile(path string, input [][]string) error <span class="cov8" title="1">{
-        // absolute representation of the specified path
-        fullPath, err := filepath.Abs(path)
-        if err != nil </span><span class="cov0" title="0">{
-                return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
-        }</span>
-
-        <span class="cov8" title="1">dirPath := filepath.Dir(fullPath)
-        // create path
-        err = os.MkdirAll(dirPath, os.ModePerm)
-        if err != nil </span><span class="cov8" title="1">{
-                return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
-        }</span>
-        // create file
-        <span class="cov8" title="1">file, err := os.Create(fullPath)
-        if err != nil </span><span class="cov8" title="1">{
-                return fmt.Errorf("cannot create file; err: %v", err)
-        }</span>
-        // create a new writer
-        <span class="cov8" title="1">writer := csv.NewWriter(file)
-
-        for row := range input </span><span class="cov8" title="1">{
-                // write to csv
-                err := writer.Write(input[row])
-                if err != nil </span><span class="cov0" title="0">{
-                        return fmt.Errorf("cannot write row in file; err: %v", err)
-                }</span>
-        }
-
-        <span class="cov8" title="1">writer.Flush()
-        file.Close()
-        return nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file4" style="display: none">package haversine
+		<pre class="file" id="file2" style="display: none">package haversine
 
 import (
         "math"

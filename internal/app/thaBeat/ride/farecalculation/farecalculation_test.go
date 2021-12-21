@@ -42,12 +42,48 @@ var estimateResults = []struct {
 	{ride.Ride{ID: "6", Points: []ride.Point{{38.019982, 23.735563, 1638692912}, {38.021867, 23.735672, 1638694000}, {38.0205329, 23.729497, 1638698799}, {38.019564, 23.735323, 1638704845}, {38.019562, 23.735366, 163870485}}}, FareRide{IDRide: "6", Total: 3.47}}, // corrupted point + min fee
 }
 
-func TestCalculateFare(t *testing.T) {
+func TestPerformFareCalculation(t *testing.T) {
 	for _, test := range estimateResults {
-		result := CalculateFare(test.ride)
+		result := performFareCalculation(test.ride)
 
 		if !reflect.DeepEqual(result, test.expected) {
 			t.Errorf("[TestCalculateTotalFareEstimate] Failed: expected: %v, actual: %v", test.expected, result)
 		}
+	}
+}
+
+var fareResults = []struct {
+	name     string
+	ride     ride.Ride
+	expected []string
+}{
+	{name: "test empty Points ", ride: ride.Ride{ID: "1", Points: []ride.Point{}}, expected: []string{"1", "1.30"}},
+	{name: "test wrong timestamp ", ride: ride.Ride{ID: "231", Points: []ride.Point{{38.019337, 23.7281, 1638690560}, {38.019326, 23.72896, 1638690560}}}, expected: []string{"231", "3.47"}},
+	{name: "test corrupted Points ", ride: ride.Ride{ID: "21", Points: []ride.Point{{38.018001, 23.730222, 1405591952}, {38.018106, 23.729468, 1405591960}}}, expected: []string{"21", "3.47"}},
+	{name: "test corrupted Points second version", ride: ride.Ride{ID: "241", Points: []ride.Point{{38.018001, 23.730222, 1639441708}, {38.018106, 23.729468, 1639441715}}}, expected: []string{"241", "3.47"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "2", Points: []ride.Point{{38.018001, 23.730222, 1405591942}, {38.018001, 23.730222, 1405591952}}}, expected: []string{"2", "3.47"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "123", Points: []ride.Point{{38.018011, 23.730212, 1638690233}, {38.018011, 23.730212, 1638690243}}}, expected: []string{"123", "3.47"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "1243", Points: []ride.Point{{38.019576, 23.735345, 1639442756}, {38.019562, 23.736212, 1639443476}}}, expected: []string{"1243", "3.68"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "1235", Points: []ride.Point{{38.019576, 23.735355, 1638704950}, {38.019562, 23.735345, 1638705853}}}, expected: []string{"1235", "4.28"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "12356", Points: []ride.Point{{38.019576, 23.735355, 1639442753}, {38.019562, 23.735345, 1639443593}}}, expected: []string{"12356", "4.08"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "1234", Points: []ride.Point{{38.019576, 23.735345, 1639357217}, {38.019562, 23.735345, 1639357700}, {38.019562, 23.735345, 1638692835}, {38.019567, 23.735437, 1638692900}}}, expected: []string{"1234", "3.47"}},
+	{name: "test empty Points ", ride: ride.Ride{ID: "6", Points: []ride.Point{{38.019982, 23.735563, 1638692912}, {38.021867, 23.735672, 1638694000}, {38.0205329, 23.729497, 1638698799}, {38.019564, 23.735323, 1638704845}, {38.019562, 23.735366, 163870485}}}, expected: []string{"6", "3.47"}}, // corrupted point + min fee
+}
+
+func TestCalculateFare(t *testing.T) {
+	for _, tt := range fareResults {
+		t.Run(tt.name, func(t *testing.T) {
+			values := make(chan ride.Ride)
+
+			go func() {
+				output := CalculateFare(values)
+				for raw := range output {
+					if !reflect.DeepEqual(raw, tt.expected) {
+						t.Errorf("[TestCalculateFare] Failed: expected: %v, actual: %v", tt.expected, raw)
+					}
+				}
+			}()
+			values <- tt.ride
+		})
 	}
 }
