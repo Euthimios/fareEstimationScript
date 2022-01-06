@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fareEstimationScript/internal/app/fareEstimation/ride/farecalculation"
+	"fareEstimationScript/internal/app/fareEstimation/ride/parser"
+	"fareEstimationScript/pkg/csv"
 	"flag"
 	"fmt"
-	"thaBeat/internal/app/thaBeat/ride/farecalculation"
-	"thaBeat/internal/app/thaBeat/ride/parser"
-	"thaBeat/pkg/csv"
 )
 
 const (

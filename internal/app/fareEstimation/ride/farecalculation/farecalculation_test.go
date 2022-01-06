@@ -1,9 +1,9 @@
 package farecalculation
 
 import (
+	"fareEstimationScript/internal/app/fareEstimation/ride"
 	"reflect"
 	"testing"
-	"thaBeat/internal/app/thaBeat/ride"
 )
 
 var isDayRideResult = []struct {

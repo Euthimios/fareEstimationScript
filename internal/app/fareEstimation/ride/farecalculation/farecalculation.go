@@ -1,9 +1,9 @@
 package farecalculation
 
 import (
+	"fareEstimationScript/internal/app/fareEstimation/ride"
+	"fareEstimationScript/pkg/haversine"
 	"math"
-	"thaBeat/internal/app/thaBeat/ride"
-	"thaBeat/pkg/haversine"
 	"time"
 )
 

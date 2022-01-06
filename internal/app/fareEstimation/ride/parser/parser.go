@@ -1,9 +1,9 @@
 package parser
 
 import (
+	"fareEstimationScript/internal/app/fareEstimation/ride"
 	"fmt"
 	"strconv"
-	"thaBeat/internal/app/thaBeat/ride"
 )
 
 // ParseData gets as parameter string arrays and for each of them a Ride struct is generated

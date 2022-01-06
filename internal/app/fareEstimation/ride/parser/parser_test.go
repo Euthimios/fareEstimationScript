@@ -2,9 +2,9 @@ package parser
 
 import (
 	"errors"
+	"fareEstimationScript/internal/app/fareEstimation/ride"
 	"reflect"
 	"testing"
-	"thaBeat/internal/app/thaBeat/ride"
 )
 
 var positions = []struct {
