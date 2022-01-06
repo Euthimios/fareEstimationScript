@@ -9,6 +9,7 @@ import (
 )
 
 // ReadFromFile gets a file path as parameter, opens a csv file, reads it
+// Todo refactor this in order to use interfaces and an abstract approaches
 func ReadFromFile(path string) ([][]string, error) {
 	// absolute representation of the specified path
 	fullPath, err := filepath.Abs(path)
