@@ -14,7 +14,6 @@ const (
 )
 
 func main() {
-
 	input, output := prepare()
 	err := Estimator(input, output)
 	if err != nil {
@@ -26,7 +25,7 @@ func main() {
 func Estimator(input string, output string) error {
 	var fareEstimation [][]string
 	// read from file
-	read, err := csv.ReadFromFile(input)
+	read, err := csv.ReadData(input)
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
@@ -39,7 +38,7 @@ func Estimator(input string, output string) error {
 		fareEstimation = append(fareEstimation, stringEstimation)
 	}
 	// write the data at desired file
-	err = csv.WriteToFile(output, fareEstimation)
+	err = csv.WriteData(output, fareEstimation)
 	if err != nil {
 		return fmt.Errorf("error writing to file: %s", err)
 	}

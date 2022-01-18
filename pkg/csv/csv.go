@@ -8,9 +8,13 @@ import (
 	"path/filepath"
 )
 
-// ReadFromFile gets a file path as parameter, opens a csv file, reads it
-// Todo refactor this in order to use interfaces and an abstract approaches
-func ReadFromFile(path string) ([][]string, error) {
+type streamData interface {
+	ReadData() ([][]string, error)
+	WriteData() error
+}
+
+// ReadData ReadFromFile gets a file path as parameter, opens a csv file, reads it
+func ReadData(path string) ([][]string, error) {
 	// absolute representation of the specified path
 	fullPath, err := filepath.Abs(path)
 	if err != nil {
@@ -30,8 +34,8 @@ func ReadFromFile(path string) ([][]string, error) {
 	return data, nil
 }
 
-// WriteToFile gets a file name  and writes them in a file
-func WriteToFile(path string, input [][]string) error {
+// WriteData WriteToFile gets a file name  and writes them in a file
+func WriteData(path string, input [][]string) error {
 	// absolute representation of the specified path
 	fullPath, err := filepath.Abs(path)
 	if err != nil {
