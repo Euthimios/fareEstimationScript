@@ -8,17 +8,23 @@ import (
 	"path/filepath"
 )
 
-type streamData interface {
+type StreamData interface {
 	ReadData() ([][]string, error)
 	WriteData() error
 }
 
+type Stream struct {
+	InputPath  string
+	OutputPath string
+	Input      [][]string
+}
+
 // ReadData ReadFromFile gets a file path as parameter, opens a csv file, reads it
-func ReadData(path string) ([][]string, error) {
+func (inStream *Stream) ReadData() ([][]string, error) {
 	// absolute representation of the specified path
-	fullPath, err := filepath.Abs(path)
+	fullPath, err := filepath.Abs(inStream.InputPath)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
+		return nil, fmt.Errorf("Invalid file path: %v; err: %v ", inStream.InputPath, err)
 	}
 	//open the file
 	file, err := os.Open(fullPath)
@@ -35,18 +41,18 @@ func ReadData(path string) ([][]string, error) {
 }
 
 // WriteData WriteToFile gets a file name  and writes them in a file
-func WriteData(path string, input [][]string) error {
+func (inStream *Stream) WriteData() error {
 	// absolute representation of the specified path
-	fullPath, err := filepath.Abs(path)
+	fullPath, err := filepath.Abs(inStream.OutputPath)
 	if err != nil {
-		return fmt.Errorf("Invalid file path: %v; err: %v ", path, err)
+		return fmt.Errorf("Invalid file path: %v; err: %v ", inStream.OutputPath, err)
 	}
 
 	dirPath := filepath.Dir(fullPath)
 	// create path
 	err = os.MkdirAll(dirPath, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Could not create path: %v; err: %v ", path, err)
+		return fmt.Errorf("Could not create path: %v; err: %v ", inStream.OutputPath, err)
 	}
 	// create file
 	file, err := os.Create(fullPath)
@@ -56,9 +62,9 @@ func WriteData(path string, input [][]string) error {
 	// create a new writer
 	writer := csv.NewWriter(file)
 
-	for row := range input {
+	for row := range inStream.Input {
 		// write to csv
-		err := writer.Write(input[row])
+		err := writer.Write(inStream.Input[row])
 		if err != nil {
 			return fmt.Errorf("cannot write row in file; err: %v", err)
 		}

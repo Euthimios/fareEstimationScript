@@ -23,9 +23,10 @@ func main() {
 }
 
 func Estimator(input string, output string) error {
+	var streamData = csv.Stream{InputPath: input}
 	var fareEstimation [][]string
 	// read from file
-	read, err := csv.ReadData(input)
+	read, err := streamData.ReadData()
 	if err != nil {
 		return fmt.Errorf("failed to open and/or read the file : %v", err)
 	}
@@ -38,7 +39,9 @@ func Estimator(input string, output string) error {
 		fareEstimation = append(fareEstimation, stringEstimation)
 	}
 	// write the data at desired file
-	err = csv.WriteData(output, fareEstimation)
+	streamData.OutputPath = outputFile
+	streamData.Input = fareEstimation
+	err = streamData.WriteData()
 	if err != nil {
 		return fmt.Errorf("error writing to file: %s", err)
 	}
